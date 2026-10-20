@@ -1,0 +1,209 @@
+<div align="center">
+
+<img src="assets/ocode-logo-black.gif" alt="OCode.js animated logo" width="420" />
+
+**OCode.js — bộ tiện ích JavaScript/TypeScript gọn nhẹ, không dependency, dùng chung cho hệ sinh thái VelCli.**
+
+*Build · Deploy · Scale*
+
+[![npm version](https://img.shields.io/npm/v/ocode-js.svg?label=npm)](https://www.npmjs.com/package/ocode-js)
+[![CI](https://github.com/Velclaw/OCode.js/actions/workflows/ci.yml/badge.svg)](https://github.com/Velclaw/OCode.js/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-4f8cff.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/Node.js-%3E%3D18-43853d?logo=node.js&logoColor=white)](https://nodejs.org/)
+
+[Tiếng Việt](#tiếng-việt) · [English](#english) · [API reference](docs/API.md) · [Logo preview](assets/logo-preview.html)
+
+</div>
+
+> **Trạng thái:** đang phát triển sớm, phiên bản 0.1.0. Đã có mã nguồn và kiểm thử ban đầu. Badge npm có thể trống cho đến khi gói thật sự được phát hành.
+
+---
+
+## Tiếng Việt
+
+OCode.js là lớp tiện ích nền cho các dự án của [VelCli](https://velcli.dev) (nền tảng phát triển AI trên mọi thiết bị). Thư viện cung cấp các hàm nhỏ, dễ ghép cho những tác vụ lặp đi lặp lại trong ứng dụng web, không có dependency lúc chạy và không phụ thuộc framework. Có thể dùng với JavaScript, TypeScript, Node.js và Next.js.
+
+### Vì sao phù hợp với VelCli
+
+VelCli gồm nhiều module: AI Agent, Workspace (Editor + Files + Terminal), VelclawHost, VelcliHub và Plugins. Các tính năng của OCode.js được chọn để phục vụ những nhu cầu chung của các module này:
+
+| Nhu cầu | Module OCode.js |
+| --- | --- |
+| Tạo slug cho dự án, template, trang docs | `string` |
+| Gộp cấu hình dự án, đọc giá trị lồng nhau | `object` |
+| Gọi API deploy/agent có retry, timeout, chống gọi trùng | `async`, `http` |
+| Dựng và làm sạch URL (preview, liên kết chia sẻ) | `url` |
+| Đọc biến môi trường khi build/deploy | `env` |
+| Log có cấp độ cho Terminal và tác vụ nền | `logger` |
+| Kiểm tra dữ liệu đầu vào tại ranh giới ứng dụng | `validation` |
+
+> Lưu ý: bảng trên mô tả định hướng sử dụng. Mức độ tích hợp thực tế vào từng module VelCli sẽ được ghi vào tài liệu khi triển khai.
+
+### Tính năng
+
+- **Chuỗi:** tạo slug, chuyển kiểu chữ, escape HTML, cắt chuỗi an toàn.
+- **Object:** chọn/bỏ thuộc tính, kiểm tra plain object, merge đệ quy, đọc đường dẫn lồng nhau, sao chép dữ liệu JSON.
+- **Bất đồng bộ:** sleep có AbortSignal, retry exponential backoff, gộp lời gọi trùng, timeout.
+- **URL:** cập nhật query, nối URL, parse an toàn, xóa tham số tracking.
+- **Validation:** kiểm tra email, URL HTTP(S), object và khoảng số.
+- **HTTP:** fetch JSON có kiểu, tạo headers và request JSON.
+- **Browser storage:** truy cập localStorage có kiểm tra môi trường và xử lý lỗi.
+- **Environment:** đọc biến môi trường tùy chọn/bắt buộc, parse boolean/số nguyên.
+- **Logger:** log theo cấp độ, hỗ trợ prefix và sink tùy chỉnh.
+- **Chất lượng mã:** TypeScript strict, file khai báo kiểu, source map, kiểm thử tự động và GitHub Actions CI.
+
+### Cài đặt
+
+Gói chưa được phát hành lên npm. Sau khi phát hành, cài bằng:
+
+```bash
+npm install ocode-js
+```
+
+Hiện tại, clone repository và chạy thử:
+
+```bash
+git clone https://github.com/Velclaw/OCode.js.git
+cd OCode.js
+npm install
+npm test
+```
+
+### Bắt đầu nhanh
+
+```ts
+import { slugify, retry, withQuery, isHttpUrl } from "ocode-js";
+
+const slug = slugify("Dự án VelCli đầu tiên");
+const preview = withQuery("https://example.com/preview", { source: "velcli", page: 2 });
+
+const status = await retry(async () => {
+  const response = await fetch("https://example.com/api/status");
+  if (!response.ok) throw new Error("Request failed: " + response.status);
+  return response.json();
+}, { attempts: 3, delayMs: 200 });
+
+console.log({ slug, preview, valid: isHttpUrl(preview), status });
+```
+
+### Nhập theo từng module
+
+```ts
+import { slugify } from "ocode-js/string";
+import { deepMerge } from "ocode-js/object";
+import { retry, withTimeout } from "ocode-js/async";
+import { withQuery } from "ocode-js/url";
+import { fetchJson } from "ocode-js/http";
+```
+
+### Dùng với Next.js
+
+OCode.js không thay thế Next.js hay Vercel; đây là bộ tiện ích có thể nhập vào dự án Next.js. Hầu hết hàm dùng được phía server. Chỉ gọi các hàm localStorage ở phía trình duyệt. Xem [ví dụ Next.js](examples/nextjs/README.md).
+
+### Tài liệu API
+
+| Module | Hàm xuất ra |
+| --- | --- |
+| string | slugify, capitalize, toKebabCase, escapeHtml, truncate, toStringSafe |
+| object | isPlainObject, pick, omit, deepMerge, getPath, cloneJson |
+| async | sleep, retry, dedupeAsync, withTimeout |
+| url | withQuery, joinUrl, parseUrl, stripTrackingParams |
+| validation | isNonEmptyString, isEmail, isHttpUrl, isRecord, isWithinRange, assertNonEmptyString |
+| http | fetchJson, jsonHeaders, jsonRequest |
+| browser | getLocalStorage, readStorage, writeStorage, removeStorage |
+| env | getEnv, requireEnv, getEnvBoolean, getEnvNumber |
+| logger | createLogger |
+
+Mô tả đầy đủ và lưu ý an toàn: [docs/API.md](docs/API.md).
+
+### Phát triển
+
+Yêu cầu Node.js 18+ và npm.
+
+```bash
+npm install
+npm test
+npm run build
+```
+
+Kiểm thử dùng test runner có sẵn của Node. CI build gói và chạy test khi push hoặc mở pull request vào `main`.
+
+### Lộ trình
+
+- [x] Tạo cấu trúc dự án và tài nguyên thương hiệu
+- [x] Viết các module tiện ích TypeScript ban đầu
+- [x] Bổ sung kiểm thử và CI
+- [x] Bổ sung tài liệu API ban đầu
+- [x] Tạo workflow phát hành npm theo tag
+- [ ] Xác minh tên package npm và cấu hình secret `NPM_TOKEN`
+- [ ] Chạy checklist release và phát hành phiên bản đầu tiên
+- [ ] Mở rộng kiểm thử API và báo cáo coverage
+- [ ] Ghi chú tích hợp với Workspace, VelclawHost, VelcliHub và Plugins
+
+### Bảo mật
+
+Không commit API key, mật khẩu, private key hoặc file môi trường production. Kiểm tra dữ liệu không tin cậy tại ranh giới ứng dụng. `escapeHtml` chỉ là hàm escape văn bản cơ bản, không thay thế một HTML sanitizer theo ngữ cảnh khi render HTML không tin cậy.
+
+### Giấy phép
+
+MIT. Xem [LICENSE](LICENSE).
+
+---
+
+## English
+
+OCode.js is the shared utility layer for the [VelCli](https://velcli.dev) ecosystem: small, composable helpers for common application tasks, with zero runtime dependencies. It is framework-agnostic and works with JavaScript, TypeScript, Node.js and Next.js.
+
+### Fit with VelCli
+
+VelCli's modules (AI Agent, Workspace, VelclawHost, VelcliHub, Plugins) share common needs that OCode.js covers: slugs and config merging, resilient API calls (retry, timeout, dedupe), URL building and cleanup, environment reading, leveled logging and input validation. The mapping table in the Vietnamese section describes the intended usage; actual integration is documented as it lands.
+
+### Features
+
+Strings, objects, async control flow, URLs, validation, typed JSON fetch, guarded browser storage, environment parsing and a small logger. Written in strict TypeScript with declarations, source maps, Node test runner and GitHub Actions CI.
+
+### Install
+
+Not yet published to npm. Once released: `npm install ocode-js`. For now:
+
+```bash
+git clone https://github.com/Velclaw/OCode.js.git
+cd OCode.js
+npm install
+npm test
+```
+
+### Quick start
+
+```ts
+import { slugify, retry, withQuery, isHttpUrl } from "ocode-js";
+
+const slug = slugify("My first VelCli project");
+const preview = withQuery("https://example.com/preview", { source: "velcli", page: 2 });
+
+const status = await retry(async () => {
+  const response = await fetch("https://example.com/api/status");
+  if (!response.ok) throw new Error("Request failed: " + response.status);
+  return response.json();
+}, { attempts: 3, delayMs: 200 });
+
+console.log({ slug, preview, valid: isHttpUrl(preview), status });
+```
+
+Per-module imports (`ocode-js/string`, `ocode-js/object`, `ocode-js/async`, `ocode-js/url`, `ocode-js/http`), the API table, development steps and the Next.js notes are the same as in the Vietnamese section above. See [docs/API.md](docs/API.md).
+
+### Security
+
+Never commit secrets or production environment files. Validate untrusted input at application boundaries. `escapeHtml` is basic text escaping, not a replacement for a context-aware HTML sanitizer.
+
+### License
+
+MIT. See [LICENSE](LICENSE).
+
+---
+
+## Brand assets
+
+- [Animated GIF logo](assets/ocode-logo.gif)
+- [Transparent SVG logo](assets/ocode-logo.svg)
+- [Responsive animated logo preview](assets/logo-preview.html)
