@@ -90,3 +90,18 @@ test('validates manifest and pathname inputs', () => {
     assert.throws(() => matchRoute(manifest, invalid), /Invalid pathname/);
   }
 });
+
+test('stores dangerous dynamic parameter names as ordinary own properties', () => {
+  for (const key of ['__proto__', 'constructor', 'prototype']) {
+    const route = { pathname: `/[${key}]`, segments: [`[${key}]`] };
+    const result = matchRoute({ routes: [route] }, '/safe-value');
+    assert.equal(Object.getPrototypeOf(result.params), Object.prototype);
+    assert.equal(Object.hasOwn(result.params, key), true);
+    assert.equal(result.params[key], 'safe-value');
+  }
+});
+
+test('ignores malformed route entries instead of throwing while scanning', () => {
+  const valid = { pathname: '/[slug]', segments: ['[slug]'] };
+  assert.equal(matchRoute({ routes: [null, {}, { pathname: '/broken', segments: 'broken' }, valid] }, '/ok').route, valid);
+});
