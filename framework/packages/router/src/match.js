@@ -36,7 +36,7 @@ export function matchRoute(manifest, inputPathname) {
     for (let i = 0; i < route.segments.length; i += 1) {
       const expected = route.segments[i], actual = incoming[i];
       if (typeof expected !== 'string') return null;
-      if (/^\\[[^\\]]+\\]$/.test(expected)) {
+      if (/^\[[^\]]+\]$/.test(expected)) {
         const key = expected.slice(1, -1);
         if (!key || Object.hasOwn(params, key)) return null;
         // Define own data properties explicitly: assigning "__proto__" on a plain
