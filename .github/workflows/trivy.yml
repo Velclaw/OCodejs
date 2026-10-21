@@ -9,7 +9,6 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-    # The branches below must be a subset of the branches above
     branches: [ "main" ]
   schedule:
     - cron: '15 2 * * 1'
@@ -20,14 +19,14 @@ permissions:
 jobs:
   build:
     permissions:
-      contents: read # for actions/checkout to fetch code
-      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+      contents: read
+      security-events: write
+      actions: read
     name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Build an image from Dockerfile
         run: |
@@ -43,6 +42,6 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@e0b5d5c5d5b6a2f7d8c0b8d9a7f1c2d3e4f5a6b7
         with:
           sarif_file: 'trivy-results.sarif'
