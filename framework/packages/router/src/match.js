@@ -7,13 +7,13 @@ function normalizePathname(input) {
   if (typeof input !== 'string' || !input.trim()) throw new TypeError('Pathname must be a non-empty string.');
   let pathname = input;
   try {
-    if (/^[a-zA-Z][a-zA-Z\\d+.-]*:\\/\\//.test(pathname)) pathname = new URL(pathname).pathname;
+    if (/^[a-zA-Z][a-zA-Z\d+.-]*:\/\//.test(pathname)) pathname = new URL(pathname).pathname;
     else pathname = pathname.split(/[?#]/, 1)[0];
     pathname = decodeURI(pathname);
   } catch { throw new Error(`Invalid pathname: ${input}`); }
   if (!pathname.startsWith('/')) pathname = `/${pathname}`;
-  pathname = pathname.replace(/\\/{2,}/g, '/');
-  if (pathname.length > 1) pathname = pathname.replace(/\\/$/, '');
+  pathname = pathname.replace(/\/{2,}/g, '/');
+  if (pathname.length > 1) pathname = pathname.replace(/\/$/, '');
   return pathname;
 }
 /** Decode a URL segment, throwing an Error that identifies originalPath on invalid encoding. */
