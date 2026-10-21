@@ -60,18 +60,32 @@ These are convenience checks, not a substitute for server-side authorization or 
 
 ## HTTP — `ocode-js/http`
 
-- `fetchJson(input, init?)`: call `fetch`, check the HTTP response, and decode JSON. Validate returned data at the application boundary.
-- `jsonHeaders(headers?)`: create a `Headers` object with JSON Accept/Content-Type defaults while preserving supplied headers.
-- `jsonRequest(body, init?)`: return a `RequestInit` object with JSON-stringified body and JSON headers. It does not perform the network request itself.
+### `fetchJson<T>(input, init?)`
+
+Fetch a resource and decode the response body as JSON. The default behavior throws an error for non-2xx HTTP responses and for invalid JSON. The generic type `T` is a TypeScript assertion only; it does not validate the returned payload at runtime.
+
+Options extend `RequestInit` with:
+
+- `throwOnHttpError?: boolean` — defaults to `true`. Set to `false` to attempt JSON parsing even when the HTTP status is not successful.
+- `timeoutMs?: number` — optional request deadline in milliseconds. Must be a positive, finite number. When exceeded, the helper aborts its fetch and throws an error containing the configured duration.
+- `signal?: AbortSignal` — caller cancellation. When `timeoutMs` is also set, caller cancellation is forwarded to an internal controller; otherwise the supplied signal is passed through directly.
 
 Example:
 
 ```ts
-const response = await fetch("/api/items", jsonRequest({ name: "example" }, { method: "POST" }));
-const data = await response.json();
+import { fetchJson } from "ocode-js/http";
+
+type Item = { id: string; name: string };
+
+const item = await fetchJson<Item>("https://example.com/api/items/1", {
+  timeoutMs: 5_000,
+  headers: { Accept: "application/json" },
+});
 ```
 
-Network requests can fail, time out, or return untrusted data. Apply authentication, authorization, schema validation, and cancellation policies in your application.
+Use `jsonHeaders(headers?)` to create a `Headers` object with JSON Accept/Content-Type defaults while preserving supplied headers. Use `jsonRequest(body, init?)` to return a `RequestInit` object with a JSON-stringified body and JSON headers; it does not perform the network request itself.
+
+Network requests can fail, time out, or return untrusted data. Apply authentication, authorization, schema validation, and cancellation policies in your application. A timeout can only abort work that honors the provided abort signal.
 
 ## Browser storage — `ocode-js/browser`
 
