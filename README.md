@@ -1,201 +1,236 @@
 <div align="center">
 
-<img src="assets/ocode-logo-black.gif" alt="OCode.js animated logo" width="420" />
+<img src="assets/ocode-logo-black.gif" alt="OCode.js — animated logo" width="420" />
 
-**A lightweight, dependency-free JavaScript and TypeScript utility toolkit for modern web apps.**
+# OCode.js
 
-[![npm version](https://img.shields.io/npm/v/ocode-js.svg?label=npm)](https://www.npmjs.com/package/ocode-js)
-[![CI](https://github.com/Velclaw/OCode.js/actions/workflows/ci.yml/badge.svg)](https://github.com/Velclaw/OCode.js/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-4f8cff.svg)](LICENSE)
-[![Node](https://img.shields.io/badge/Node.js-%3E%3D18-43853d?logo=node.js&logoColor=white)](https://nodejs.org/)
+### Small utilities. Clear APIs. Zero runtime dependencies.
 
-[English](#english) · [Tiếng Việt](#tiếng-việt) · [API reference](docs/API.md) · [Logo preview](assets/logo-preview.html)
+A lightweight JavaScript / TypeScript utility toolkit for modern applications.
+
+<p>
+  <a href="docs/API.md">API Reference</a> ·
+  <a href="#quick-start">Quick Start</a> ·
+  <a href="#tiếng-việt">Tiếng Việt</a> ·
+  <a href="https://github.com/Velclaw/OCodejs/issues">Issues</a>
+</p>
+
+[![CI](https://github.com/Velclaw/OCodejs/actions/workflows/ci.yml/badge.svg)](https://github.com/Velclaw/OCodejs/actions/workflows/ci.yml)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-43853d?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-4f8cff.svg)](LICENSE)
+
+**Status:** v0.1.0 · Early development · Not yet published to npm
 
 </div>
 
-> **Status:** early development, version 0.1.0. Source code and initial tests are included. The npm badge may remain empty until the package is actually published.
-
 ---
 
-## English
+## What is OCode.js?
 
-OCode.js provides small, composable helpers for common application tasks without runtime dependencies. It is framework-agnostic and can be used with JavaScript, TypeScript, Node.js, and modern web applications including Next.js.
+OCode.js is a collection of small, composable helpers for common application tasks. It works with JavaScript, TypeScript, Node.js, and web frameworks such as Next.js—without requiring a framework or adding runtime dependencies.
 
-### Features
+> **Scope:** OCode.js is a utility library. It does not replace Next.js, Vercel, or a full-stack framework.
 
-- **Strings:** slug generation, case conversion, HTML escaping, safe truncation.
-- **Objects:** pick, omit, plain-object checks, recursive merge, nested-path reads, JSON cloning.
-- **Async:** sleep with abort support, retry with exponential backoff, async deduplication, timeouts.
-- **URLs:** query parameter updates, URL joining, safe parsing, tracking-parameter removal.
-- **Validation:** email/HTTP URL checks, record/range checks, assertion helpers.
-- **HTTP:** typed JSON fetch, JSON headers and request helpers.
-- **Browser storage:** guarded localStorage access and JSON read/write helpers.
-- **Environment:** read required/optional values and parse booleans/integers.
-- **Logging:** a small logger with levels and an injectable output sink.
-- **Quality:** strict TypeScript, declarations, source maps, Node test runner and GitHub Actions CI.
+## Why OCode.js?
 
-### Install
+- **Zero runtime dependencies** — keep your production dependency tree small.
+- **Composable modules** — import only the utilities you need.
+- **TypeScript-first** — strict compiler settings and generated type declarations.
+- **Practical async helpers** — retry, timeout, sleep, and deduplication.
+- **Browser-aware utilities** — storage helpers designed for browser environments.
+- **Tested in CI** — automated tests run through GitHub Actions.
 
-The package is not published to npm yet. After a release is published, install it with:
+## Feature overview
 
-~~~bash
-npm install ocode-js
-~~~
+| Module | What it provides |
+| --- | --- |
+| `string` | Slug generation, case conversion, HTML escaping, safe truncation |
+| `object` | Pick / omit, plain-object checks, deep merge, nested-path reads, JSON cloning |
+| `async` | Abort-aware sleep, retry with backoff, async deduplication, timeouts |
+| `url` | Query updates, URL joining, parsing, tracking-parameter removal |
+| `validation` | String, email, HTTP URL, record, and range checks |
+| `http` | JSON fetch and request helpers |
+| `browser` | Guarded localStorage access and JSON storage helpers |
+| `env` | Required / optional environment values and typed parsing |
+| `logger` | Lightweight logger with levels and a configurable output sink |
 
-For now, clone this repository and build it locally:
+See the [complete API reference](docs/API.md) for function signatures and usage notes.
 
-~~~bash
-git clone https://github.com/Velclaw/OCode.js.git
-cd OCode.js
+## Quick start
+
+### Requirements
+
+- Node.js 18 or newer
+- npm
+
+### Install from source
+
+The package has **not been published to npm yet**. To try the current source:
+
+```bash
+git clone https://github.com/Velclaw/OCodejs.git
+cd OCodejs
 npm install
 npm test
-~~~
+```
 
-### Quick start
+After an official npm release, the intended install command will be:
 
-~~~ts
+```bash
+npm install ocode-js
+```
+
+### Example
+
+```ts
 import { slugify, retry, withQuery, isHttpUrl } from "ocode-js";
 
 const slug = slugify("Build a better web");
-const docs = withQuery("https://example.com/docs", { source: "app", page: 2 });
+const docsUrl = withQuery("https://example.com/docs", {
+  source: "app",
+  page: 2,
+});
 
 const result = await retry(async () => {
   const response = await fetch("https://example.com/api/status");
-  if (!response.ok) throw new Error("Request failed: " + response.status);
+
+  if (!response.ok) {
+    throw new Error(`Request failed: ${response.status}`);
+  }
+
   return response.json();
 }, { attempts: 3, delayMs: 200 });
 
-console.log({ slug, docs, valid: isHttpUrl(docs), result });
-~~~
+console.log({
+  slug,
+  docsUrl,
+  validUrl: isHttpUrl(docsUrl),
+  result,
+});
+```
 
-### Import specific modules
+### Import by module
 
-~~~
+```ts
 import { slugify } from "ocode-js/string";
 import { deepMerge } from "ocode-js/object";
 import { retry, withTimeout } from "ocode-js/async";
 import { withQuery } from "ocode-js/url";
 import { fetchJson } from "ocode-js/http";
-~~~
+```
 
-### Next.js compatibility
+## Using OCode.js with Next.js
 
-OCode.js does not require Next.js and does not replace Next.js or Vercel. It is a small utility package that can be used inside a Next.js project. Most helpers are safe for server-side use; browser storage helpers must only be called in the browser. See the [Next.js example](examples/nextjs/README.md).
+OCode.js can be imported into a Next.js application, but it is independent of Next.js.
 
-### API reference
+- General-purpose helpers can be used wherever their runtime requirements are met.
+- Browser storage helpers must only be called in the browser.
+- Validate untrusted input at application boundaries.
+- `escapeHtml` is a basic escaping helper, not a replacement for a context-aware sanitizer for untrusted rich HTML.
 
-Full module descriptions and safety notes are in the [API reference](docs/API.md).
+See the [Next.js example](examples/nextjs/README.md).
 
-| Module | Exports |
-| --- | --- |
-| string | slugify, capitalize, toKebabCase, escapeHtml, truncate, toStringSafe |
-| object | isPlainObject, pick, omit, deepMerge, getPath, cloneJson |
-| async | sleep, retry, dedupeAsync, withTimeout |
-| url | withQuery, joinUrl, parseUrl, stripTrackingParams |
-| validation | isNonEmptyString, isEmail, isHttpUrl, isRecord, isWithinRange, assertNonEmptyString |
-| http | fetchJson, jsonHeaders, jsonRequest |
-| browser | getLocalStorage, readStorage, writeStorage, removeStorage |
-| env | getEnv, requireEnv, getEnvBoolean, getEnvNumber |
-| logger | createLogger |
+## Development
 
-### Development
+Run the build and test suite locally:
 
-Requirements: Node.js 18 or newer and npm.
-
-~~~
+```bash
 npm install
-npm test
 npm run build
-~~~
+npm test
+```
 
-Tests use Node's built-in test runner. CI builds the package and runs the test suite on pushes and pull requests to main.
+Generate a coverage report:
 
-### Roadmap
+```bash
+npm run test:coverage
+```
 
-- [x] Establish project structure and brand assets
-- [x] Implement initial TypeScript utility modules
-- [x] Add automated tests and CI workflow
-- [x] Add initial API reference
-- [x] Add tag-triggered npm release workflow
-- [ ] Verify npm package-name availability and configure the `NPM_TOKEN` repository secret
-- [ ] Run the release checklist and publish the first version
-- [ ] Add broader API test coverage and coverage reporting
+The project uses TypeScript in strict mode and Node.js's built-in test runner. GitHub Actions runs CI for repository changes.
 
-### Security
+## Roadmap
 
-Never commit API keys, passwords, private keys, or production environment files. Validate untrusted input at application boundaries. escapeHtml is a basic text escaping helper and is not a substitute for a context-aware HTML sanitizer when rendering untrusted rich HTML.
+- [x] Initial TypeScript utility modules
+- [x] API documentation baseline
+- [x] Automated tests and CI
+- [x] Release workflow scaffolding
+- [ ] Expand HTTP timeout and error-path tests
+- [ ] Increase API test coverage and review coverage reporting
+- [ ] Verify npm package availability and release configuration
+- [ ] Complete the release checklist before publishing
 
-### License
+## Security
 
-MIT. See [LICENSE](LICENSE).
+- Never commit API keys, access tokens, passwords, private keys, or production environment files.
+- Treat external input as untrusted and validate it at application boundaries.
+- Report security concerns through the repository's [Issues](https://github.com/Velclaw/OCodejs/issues) page without posting secrets or sensitive data.
+
+## License
+
+OCode.js is licensed under the [MIT License](LICENSE).
 
 ---
 
 ## Tiếng Việt
 
-OCode.js là bộ tiện ích JavaScript/TypeScript gọn nhẹ, không có dependency lúc chạy, dành cho các tác vụ thường gặp trong ứng dụng web hiện đại. Thư viện không phụ thuộc framework và có thể dùng cùng Node.js, Next.js hoặc dự án web khác.
+OCode.js là bộ tiện ích JavaScript/TypeScript gọn nhẹ, không có dependency lúc chạy, dành cho các tác vụ thường gặp trong ứng dụng web hiện đại. Thư viện có thể dùng độc lập hoặc tích hợp vào dự án Node.js, TypeScript và Next.js.
 
-### Tính năng ban đầu
+### Điểm chính
 
-- **Chuỗi:** tạo slug, chuyển kiểu chữ, escape HTML, cắt chuỗi an toàn.
-- **Object:** chọn/bỏ thuộc tính, kiểm tra plain object, merge đệ quy, đọc đường dẫn lồng nhau, sao chép dữ liệu JSON.
-- **Bất đồng bộ:** sleep có AbortSignal, retry exponential backoff, gộp lời gọi trùng, timeout.
-- **URL:** cập nhật query, nối URL, parse an toàn, xóa tham số tracking.
-- **Validation:** kiểm tra email, URL HTTP(S), object và khoảng số.
-- **HTTP:** fetch JSON có kiểu, tạo headers và request JSON.
-- **Browser storage:** truy cập localStorage có kiểm tra môi trường và xử lý lỗi.
-- **Environment:** đọc biến môi trường tùy chọn/bắt buộc và parse boolean/số nguyên.
-- **Logger:** log theo cấp độ, hỗ trợ prefix và sink tùy chỉnh.
-- **Chất lượng mã:** TypeScript strict, file khai báo kiểu, source map, kiểm thử tự động và GitHub Actions CI.
+- **Không có runtime dependency:** giảm phụ thuộc khi chạy production.
+- **Module độc lập:** import theo từng nhóm chức năng.
+- **TypeScript strict:** ưu tiên kiểu dữ liệu rõ ràng và file khai báo kiểu.
+- **Tiện ích bất đồng bộ:** retry, timeout, sleep có hỗ trợ hủy và gộp lời gọi trùng.
+- **Hỗ trợ trình duyệt:** các hàm storage có kiểm tra môi trường.
+- **Có kiểm thử tự động:** chạy test và CI qua GitHub Actions.
 
 ### Cài đặt và chạy thử
 
-Gói chưa được phát hành lên npm. Hiện tại, clone repository và chạy:
+Hiện tại, package **chưa được phát hành lên npm**. Clone mã nguồn để chạy thử:
 
-~~~
-git clone https://github.com/Velclaw/OCode.js.git
-cd OCode.js
+```bash
+git clone https://github.com/Velclaw/OCodejs.git
+cd OCodejs
 npm install
 npm test
-~~~
+```
 
-Khi phát hành npm thành công, hướng dẫn cài đặt bằng npm install ocode-js sẽ có hiệu lực.
+Sau khi có bản phát hành chính thức, lệnh cài dự kiến là `npm install ocode-js`.
 
 ### Dùng với Next.js
 
-OCode.js **không thay thế Next.js hoặc Vercel**; đây là bộ tiện ích có thể nhập vào dự án Next.js. Các tiện ích thông thường có thể dùng phía server. Chỉ gọi hàm localStorage ở phía trình duyệt.
+OCode.js **không thay thế Next.js hoặc Vercel**; đây là thư viện tiện ích có thể tích hợp vào dự án Next.js. Chỉ gọi các hàm truy cập `localStorage` ở phía trình duyệt. Hàm `escapeHtml` cơ bản không thay thế bộ HTML sanitizer chuyên dụng khi xử lý HTML không tin cậy.
 
-### Tài liệu API
+### Tài liệu và phát triển
 
-Xem [tài liệu API đầy đủ](docs/API.md) để biết các module, hàm chính và lưu ý an toàn.
+- [Tài liệu API](docs/API.md)
+- [Ví dụ Next.js](examples/nextjs/README.md)
+- [Báo lỗi / đề xuất](https://github.com/Velclaw/OCodejs/issues)
 
-### Phát triển
-
-Yêu cầu Node.js 18+ và npm. Chạy npm install, sau đó npm test để build TypeScript và chạy kiểm thử.
+Yêu cầu Node.js 18+. Chạy `npm install`, sau đó `npm test` để build TypeScript và thực thi bộ kiểm thử.
 
 ### Lộ trình
 
-- [x] Tạo cấu trúc dự án và tài nguyên thương hiệu
-- [x] Viết các module tiện ích TypeScript ban đầu
-- [x] Bổ sung kiểm thử và CI
-- [x] Bổ sung tài liệu API ban đầu
-- [x] Tạo workflow phát hành npm theo tag
-- [ ] Xác minh tên package npm và cấu hình secret repository `NPM_TOKEN`
-- [ ] Chạy checklist release và phát hành phiên bản đầu tiên
-- [ ] Mở rộng kiểm thử API và báo cáo coverage
+- [x] Xây dựng các module tiện ích TypeScript ban đầu
+- [x] Bổ sung tài liệu API và CI
+- [x] Thiết lập nền tảng kiểm thử tự động
+- [ ] Mở rộng kiểm thử timeout và các nhánh lỗi HTTP
+- [ ] Tăng độ bao phủ kiểm thử API
+- [ ] Xác minh cấu hình npm và hoàn tất checklist phát hành
 
-### Bảo mật
+### Tài nguyên thương hiệu
 
-Không commit API key, mật khẩu, private key hoặc file môi trường production. Kiểm tra dữ liệu không tin cậy tại ranh giới ứng dụng. Hàm escapeHtml cơ bản không thay thế một HTML sanitizer chuyên dụng khi render HTML không tin cậy.
-
-### Giấy phép
-
-MIT. Xem LICENSE.
+- [Logo GIF động](assets/ocode-logo.gif)
+- [Logo SVG nền trong suốt](assets/ocode-logo.svg)
+- [Xem trước logo động](assets/logo-preview.html)
 
 ---
 
-## Brand assets
+<div align="center">
 
-- [Animated GIF logo](assets/ocode-logo.gif)
-- [Transparent SVG logo](assets/ocode-logo.svg)
-- [Responsive animated logo preview](assets/logo-preview.html)
+**OCode.js** · Open source · MIT
+
+<sub>Built for clarity. Designed to stay lightweight.</sub>
+
+</div>

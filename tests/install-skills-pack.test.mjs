@@ -11,7 +11,6 @@ const steps = workflow.split(/^ {6}- /m).slice(1);
 const runSteps = steps.filter((step) => /^ {8}run:/m.test(step));
 
 // Read the inline and literal run values used by this workflow, preserving shell quoting.
-// Executing the checked-in commands keeps these tests sensitive to workflow changes.
 function runScript(step) {
   assert.ok(step, "The workflow must contain the expected run step");
   const lines = step.split("\n");
@@ -93,7 +92,7 @@ test("skills workflow runs only on manual dispatch and grants repository write a
   assert.equal(permissions[1].trim(), "contents: write");
 });
 
-test("skills workflow checks out its designated branch and prepares Node before installing", () => {
+test("skills workflow pins trusted actions to full commit SHAs and prepares Node before installing", () => {
   assert.match(workflow, /^ {2}install-pack:\n {4}runs-on: ubuntu-latest$/m);
   assert.equal(steps.length, 4);
   assert.match(steps[0], /^ {8}uses: actions\/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4\.2\.2$/m);
