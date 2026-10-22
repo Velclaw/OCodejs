@@ -87,6 +87,93 @@ function mediaCss(condition) {
 
 const repository = pkg.repository.url.replace(/\.git$/, "");
 
+test("attribute parsing preserves quoted values and normalizes attribute names", () => {
+  assert.deepEqual(attributes(`HREF = "docs/API.md" aria-label='Read "API"' data-empty="" xml:lang='vi'`), {
+    href: "docs/API.md", "aria-label": 'Read "API"', "data-empty": "", "xml:lang": "vi"
+  });
+  assert.deepEqual(attributes(""), {});
+});
+
+test("element parsing handles tag case and multiline content without matching longer tag names", () => {
+  const source = `<aside>Ignore</aside><A HREF='docs/API.md'>Read\n<strong>API</strong></A >
+    <a href="#top">Home</a>`;
+  assert.deepEqual(elements("a", source), [
+    { attrs: { href: "docs/API.md" }, content: "Read\n<strong>API</strong>" },
+    { attrs: { href: "#top" }, content: "Home" }
+  ]);
+  assert.deepEqual(elements("nav", source), []);
+});
+
+test("single-element assertions reject missing and duplicate landmarks", () => {
+  assert.deepEqual(only("main", '<main id="top">Content</main>'), {
+    attrs: { id: "top" }, content: "Content"
+  });
+  for (const source of ["", "<main>First</main><main>Second</main>"]) {
+    assert.throws(() => only("main", source), { code: "ERR_ASSERTION", message: /Expected one <main>/ });
+  }
+  assert.throws(() => section("missing-section"), {
+    code: "ERR_ASSERTION", message: /Expected one section #missing-section/
+  });
+});
+
+test("entity decoding covers supported quotes and decodes only one layer", () => {
+  assert.equal(decode("&amp; &lt; &gt; &quot; &apos; &#39;"), `& < > " ' '`);
+  assert.equal(decode("&amp;lt; &unknown; &amp"), "&lt; &unknown; &amp");
+  assert.equal(decode(""), "");
+});
+
+test("text extraction preserves encoded markup and separates line breaks", () => {
+  assert.equal(text("  <p>Read<br>the<BR/>API<br />&amp; <strong>docs</strong></p>\n"), "Read the API & docs");
+  assert.equal(text("<code>&lt;main&gt; &quot;vi&quot; &#39;API&#39;</code>"), `<main> "vi" 'API'`);
+  assert.equal(text("<span> \n\t </span>"), "");
+});
+
+test("class matching requires a complete token and handles missing classes", () => {
+  const element = { attrs: { class: "\tcard-icon  card\nactive " } };
+  assert.equal(hasClass(element, "card"), true);
+  assert.equal(hasClass(element, "active"), true);
+  assert.equal(hasClass(element, "car"), false);
+  assert.equal(hasClass({ attrs: { class: "card-icon" } }, "card"), false);
+  assert.equal(hasClass({ attrs: {} }, "card"), false);
+});
+
+test("required-link assertions reject absent and similar destinations", () => {
+  const source = '<a href="README.md">Readme</a><a href="docs/API.md">API</a>';
+  assert.doesNotThrow(() => requireLinks(source, ["docs/API.md", "README.md"]));
+  for (const candidate of ["", '<a href="docs/API.md#usage">API usage</a>', source]) {
+    const destination = candidate === source ? "missing.md" : "docs/API.md";
+    assert.throws(() => requireLinks(candidate, [destination]), {
+      code: "ERR_ASSERTION", message: `Missing link to ${destination}`
+    });
+  }
+});
+
+test("CSS rule parsing merges exact grouped selectors in source order", () => {
+  const source = `
+    .card-icon { color: blue; }
+    .card, .panel { color: red; padding: 1px 2px; ; }
+    .card:hover { color: green; }
+    .card { color: white; --target: https://example.test/docs; }
+  `;
+  assert.deepEqual(rule(".card", source), {
+    color: "white", padding: "1px2px", "--target": "https://example.test/docs"
+  });
+  assert.deepEqual(rule(".panel", source), { color: "red", padding: "1px2px" });
+  assert.throws(() => rule(".car", source), { code: "ERR_ASSERTION", message: /Missing CSS rule for \.car/ });
+});
+
+test("media-query assertions keep responsive rules separate from base styles", () => {
+  const tablet = mediaCss("max-width:760px");
+  assert.equal(rule(".nav", baseCss).height, "68px");
+  assert.equal(rule(".nav", tablet).height, "62px");
+  assert.throws(() => mediaCss("max-width:999px"), {
+    code: "ERR_ASSERTION", message: /Expected media query \(max-width:999px\)/
+  });
+  assert.throws(() => rule(".navlinks a:not(.nav-cta)", baseCss), {
+    code: "ERR_ASSERTION", message: /Missing CSS rule/
+  });
+});
+
 test("homepage identifies the toolkit and declares Vietnamese document metadata", () => {
   assert.match(html, /^\s*<!doctype html>/i);
   assert.equal(only("html").attrs.lang, "vi");
@@ -276,6 +363,51 @@ test("TypeScript example forwards a rejected request through its retry callback"
     async fetch() { requests++; throw failure; }
   }), (error) => error === failure);
   assert.equal(requests, 1);
+});
+
+test("TypeScript example creates a fresh request for every retry callback invocation", async () => {
+  const failure = new Error("temporary outage");
+  const response = { ok: true, status: 200 };
+  const requests = [];
+  const result = await runExample({
+    slugify: () => "slug-from-helper",
+    async retry(operation) {
+      // Drive the callback directly; retry's own scheduling is outside this test's scope.
+      await assert.rejects(operation(), (error) => error === failure);
+      await assert.rejects(operation(), (error) => error === failure);
+      return operation();
+    },
+    async fetch(url) {
+      requests.push(url);
+      if (requests.length < 3) throw failure;
+      return response;
+    }
+  });
+  assert.equal(result.slug, "slug-from-helper");
+  assert.equal(result.result, response);
+  assert.deepEqual(requests, ["/api/status", "/api/status", "/api/status"]);
+});
+
+test("TypeScript example preserves retry's result without making an eager request", async () => {
+  const response = { cached: true };
+  const result = await runExample({
+    slugify: () => "slug-from-helper",
+    retry: async () => response,
+    fetch() { assert.fail("Requests must run inside the retry callback"); }
+  });
+  assert.equal(result.slug, "slug-from-helper");
+  assert.equal(result.result, response);
+});
+
+test("TypeScript example propagates retry rejection before a request is attempted", async () => {
+  const failure = new Error("retry cancelled");
+  let requests = 0;
+  await assert.rejects(runExample({
+    slugify: () => "slug-from-helper",
+    async retry() { throw failure; },
+    fetch() { requests++; return Promise.resolve({ ok: true }); }
+  }), (error) => error === failure);
+  assert.equal(requests, 0);
 });
 
 test("ecosystem and footer communicate framework compatibility and development status", () => {
