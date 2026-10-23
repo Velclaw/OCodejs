@@ -258,7 +258,15 @@ test("Next.js guidance distinguishes server usage from every browser storage hel
 });
 
 test("landing page content and navigation are available without JavaScript or remote assets", () => {
-  assert.doesNotMatch(html, /<script\b/i);
+  // Allow Vercel Analytics scripts but no other scripts
+  const scriptPattern = /<script\b[^>]*>[\s\S]*?<\/script>/gi;
+  const scriptTags = html.match(scriptPattern) || [];
+  for (const tag of scriptTags) {
+    assert.ok(
+      tag.includes('/_vercel/insights/') || tag.includes('window.va'),
+      `Found non-analytics script tag: ${tag}`
+    );
+  }
   assert.doesNotMatch(body, /\son[a-z]+\s*=/i);
   assert.doesNotMatch(css, /@import\b|url\s*\(\s*["']?https?:/i);
   assert.doesNotMatch(html, /<link\b[^>]*\brel=["']stylesheet["']/i);
