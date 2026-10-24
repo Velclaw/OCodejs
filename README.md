@@ -10,6 +10,7 @@ A lightweight JavaScript / TypeScript utility toolkit for modern applications.
 
 <p>
   <a href="docs/API.md">API Reference</a> ·
+  <a href="docs/HTTP-AND-TESTING.md">HTTP & Testing Guide</a> ·
   <a href="#quick-start">Quick Start</a> ·
   <a href="#tiếng-việt">Tiếng Việt</a> ·
   <a href="https://github.com/Velclaw/OCodejs/issues">Issues</a>
