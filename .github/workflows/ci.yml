@@ -19,6 +19,8 @@ jobs:
           node-version: 20
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Check documentation links
+        run: npm run docs:check
       - name: Build and run tests
         run: npm test
       - name: Generate API coverage report
