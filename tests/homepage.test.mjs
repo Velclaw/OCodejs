@@ -35,7 +35,7 @@ test("homepage declares Vietnamese, UTF-8, mobile viewport and project metadata"
   assert.equal(metas.find((m) => m.name === "viewport")?.content, "width=device-width,initial-scale=1");
   assert.equal(metas.find((m) => m.name === "theme-color")?.content, "#000000");
   assert.match(metas.find((m) => m.name === "description")?.content ?? "", /OCode\.js/i);
-  assert.match(text(one("title").content), /OCode\\.js/i);
+  assert.match(text(one("title").content), /OCode\.js/i);
 });
 
 test("documentation page has semantic landmarks, one main heading and named navigation", () => {
@@ -94,7 +94,7 @@ test("local links in the HTML resolve to repository files", () => {
     assert.ok(href?.trim(), "Every link needs a destination");
     assert.ok(link.attributes["aria-label"]?.trim() || text(link.content), `Unnamed link: ${href}`);
     assert.doesNotMatch(href, /^(?:javascript|data):/i);
-    if (href.startsWith("#") || /^[a-z][\\w+.-]*:/i.test(href)) continue;
+    if (href.startsWith("#") || /^[a-z][\w+.-]*:/i.test(href)) continue;
     assert.ok(!href.startsWith("/"), `Local link must work under a subdirectory: ${href}`);
     const target = new URL(href.split("#")[0].split("?")[0], root);
     assert.ok(existsSync(target), `Missing local target: ${href}`);
