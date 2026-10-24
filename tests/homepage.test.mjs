@@ -16,7 +16,7 @@ function elements(tag, markup = html) {
 }
 function text(markup) {
   return markup.replace(/<[^>]*>/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\\s+/g, " ").trim();
+    .replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\s+/g, " ").trim();
 }
 function one(tag, markup = html) {
   const found = elements(tag, markup);
@@ -28,13 +28,13 @@ function hasId(id) {
 }
 
 test("homepage declares Vietnamese, UTF-8, mobile viewport and project metadata", () => {
-  assert.match(html, /^\\s*<!doctype html>/i);
+  assert.match(html, /^\s*<!doctype html>/i);
   assert.equal(one("html").attributes.lang, "vi");
-  const metas = [...html.matchAll(/<meta\\b([^>]*)>/gi)].map((m) => attrs(m[1]));
+  const metas = [...html.matchAll(/<meta\b([^>]*)>/gi)].map((m) => attrs(m[1]));
   assert.ok(metas.some((m) => m.charset?.toLowerCase() === "utf-8"));
   assert.equal(metas.find((m) => m.name === "viewport")?.content, "width=device-width,initial-scale=1");
   assert.equal(metas.find((m) => m.name === "theme-color")?.content, "#000000");
-  assert.match(metas.find((m) => m.name === "description")?.content ?? "", /OCode\\.js/i);
+  assert.match(metas.find((m) => m.name === "description")?.content ?? "", /OCode\.js/i);
   assert.match(text(one("title").content), /OCode\\.js/i);
 });
 
@@ -44,7 +44,7 @@ test("documentation page has semantic landmarks, one main heading and named navi
   const main = one("main");
   assert.equal(main.attributes.id, "top");
   assert.equal(elements("h1", main.content).length, 1);
-  assert.match(text(one("h1", main.content).content), /Build with OCode\\.js\\. Keep it precise\\./);
+  assert.match(text(one("h1", main.content).content), /Build with OCode\.js\. Keep it precise\./);
   const navs = elements("nav");
   assert.ok(navs.length >= 2);
   for (const nav of navs) {
@@ -57,7 +57,7 @@ test("sidebar navigation targets existing sections and supports mobile controls"
   for (const id of ["top", "guide", "architecture", "api", "forms"]) assert.ok(hasId(id), `Missing #${id}`);
   assert.match(html, /id="sidebarToggle"/);
   assert.match(html, /id="sidebarOverlay"/);
-  assert.match(html, /event\\.key === ['"]Escape['"]/);
+  assert.match(html, /event\.key === ['"]Escape['"]/);
   for (const link of elements("a").filter((a) => (a.attributes.href ?? "").startsWith("#"))) {
     const id = decodeURIComponent(link.attributes.href.slice(1));
     assert.ok(id && hasId(id), `Broken fragment link: #${id}`);
@@ -65,15 +65,15 @@ test("sidebar navigation targets existing sections and supports mobile controls"
 });
 
 test("project links use the repository URL declared by package metadata", () => {
-  const repo = new URL(manifest.repository.url.replace(/^git\\+/, "").replace(/\\.git$/, ""));
+  const repo = new URL(manifest.repository.url.replace(/^git\+/, "").replace(/\.git$/, ""));
   const links = elements("a").filter((a) => /^https?:/i.test(a.attributes.href ?? ""));
   assert.ok(links.length > 0);
   for (const link of links) {
     const url = new URL(link.attributes.href);
     assert.equal(url.protocol, "https:");
     assert.equal(url.origin, repo.origin);
-    assert.equal(url.pathname.replace(/\\/$/, ""), repo.pathname);
-    if (link.attributes.target === "_blank") assert.match(link.attributes.rel ?? "", /\\bnoreferrer\\b/);
+    assert.equal(url.pathname.replace(/\/$/, ""), repo.pathname);
+    if (link.attributes.target === "_blank") assert.match(link.attributes.rel ?? "", /\bnoreferrer\b/);
   }
 });
 
@@ -114,11 +114,11 @@ test("feedback form is explicitly a local preview and does not submit to a serve
   one("form");
   assert.match(html, /id="feedbackForm"/);
   assert.match(html, /Demo chỉ hiển thị bản xem trước trong trình duyệt; không gửi hoặc lưu thông tin/);
-  assert.match(html, /event\\.preventDefault\\(\\)/);
+  assert.match(html, /event\.preventDefault\(\)/);
   assert.match(html, /id="formNote"/);
 });
 
 test("no external stylesheet or remote CSS import is required", () => {
-  assert.doesNotMatch(html, /<link\\b[^>]*\\brel=["']stylesheet["']/i);
-  assert.doesNotMatch(one("style").content, /@import\\b|url\\s*\\(\\s*["']?https?:/i);
+  assert.doesNotMatch(html, /<link\b[^>]*\brel=["']stylesheet["']/i);
+  assert.doesNotMatch(one("style").content, /@import\b|url\s*\(\s*["']?https?:/i);
 });
