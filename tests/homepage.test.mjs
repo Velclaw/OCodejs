@@ -38,7 +38,7 @@ test("sidebar fragment links point to unique existing section targets", () => {
 
 test("documentation includes getting started, architecture, API and form examples", () => {
   for (const id of ["guide", "architecture", "api", "forms"]) {
-    assert.match(html, new RegExp('id=["'] + id + '["']', "i"), "Missing documentation section: " + id);
+    assert.ok(html.includes('id="' + id + '"'), "Missing documentation section: " + id);
   }
   assert.match(plain(html), /Hướng dẫn bắt đầu/i);
   assert.match(plain(html), /Kiến trúc/i);
