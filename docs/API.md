@@ -60,6 +60,8 @@ These are convenience checks, not a substitute for server-side authorization or 
 
 ## HTTP — `ocode-js/http`
 
+For request deadlines, cancellation, error behavior, and a recommended test matrix, see the [HTTP and Testing Guide](HTTP-AND-TESTING.md).
+
 ### `fetchJson<T>(input, init?)`
 
 Fetch a resource and decode the response body as JSON. The default behavior throws an error for non-2xx HTTP responses and for invalid JSON. The generic type `T` is a TypeScript assertion only; it does not validate the returned payload at runtime.
