@@ -79,10 +79,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Velclaw/OCode.js.git"
+    "url": "https://github.com/Velclaw/OCodejs.git"
   },
   "bugs": {
-    "url": "https://github.com/Velclaw/OCode.js/issues"
+    "url": "https://github.com/Velclaw/OCodejs/issues"
   },
-  "homepage": "https://github.com/Velclaw/OCode.js#readme"
+  "homepage": "https://github.com/Velclaw/OCodejs#readme"
 }
