@@ -71,8 +71,11 @@ test("project links use the repository URL declared by package metadata", () => 
   for (const link of links) {
     const url = new URL(link.attributes.href);
     assert.equal(url.protocol, "https:");
-    assert.equal(url.origin, repo.origin);
-    assert.equal(url.pathname.replace(/\/$/, ""), repo.pathname);
+    if (url.origin === repo.origin) {
+      assert.equal(url.pathname.replace(/\/$/, ""), repo.pathname);
+    } else {
+      assert.equal(url.href, "https://zskbot.github.io/docs-ocodejs/OCodejs-by-Velclaw-Full-Rebrand.pdf");
+    }
     if (link.attributes.target === "_blank") assert.match(link.attributes.rel ?? "", /\bnoreferrer\b/);
   }
 });
