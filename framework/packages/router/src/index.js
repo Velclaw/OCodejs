@@ -1,1 +1,2 @@
-export { scanAppDirectory } from './scan.js';\nexport { matchRoute } from './match.js';\n
+export { scanAppDirectory } from './scan.js';
+export { matchRoute } from './match.js';
