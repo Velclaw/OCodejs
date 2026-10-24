@@ -1,157 +1,295 @@
 <!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#000000">
-  <meta name="description" content="OCode.js — bộ tiện ích JavaScript và TypeScript gọn nhẹ, không phụ thuộc runtime, dành cho ứng dụng web hiện đại.">
-  <title>OCode.js — Small tools. Solid foundations.</title>
-  <style>
-    :root{color-scheme:dark;--bg:#000;--panel:#080a0e;--panel2:#0c1018;--fg:#f7f8fa;--muted:#969eac;--line:#222832;--blue:#5b9dff;--violet:#8b7bff;--max:1120px}
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth;scroll-padding-top:90px}
-    body{margin:0;background:radial-gradient(ellipse 68% 430px at 50% -170px,rgba(38,91,200,.22),transparent 76%),linear-gradient(180deg,#000 0%,#030406 58%,#000 100%);color:var(--fg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
-    a{color:inherit;text-decoration:none}
-    .container{width:min(var(--max),calc(100% - 44px));margin-inline:auto}
-    header{position:sticky;top:0;z-index:10;background:rgba(0,0,0,.78);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.09)}
-    .nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:24px}
-    .logo{display:inline-flex;align-items:center;gap:10px;font-weight:720;font-size:19px;letter-spacing:-.7px;white-space:nowrap}
-    .logo-mark{display:grid;place-items:center;width:30px;height:30px;border:1px solid rgba(111,160,255,.5);background:linear-gradient(140deg,#14284a,#11101f);color:#a8caff;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14px;box-shadow:0 0 24px rgba(59,130,246,.12)}
-    .logo .dot{color:var(--blue)}
-    .navlinks{display:flex;align-items:center;gap:26px;color:#b5bdca;font-size:13px}
-    .navlinks a:hover,.text-link:hover{color:#fff}
-    .nav-cta{border:1px solid #343b48;padding:8px 13px;color:#fff}
-    .hero{position:relative;overflow:hidden;text-align:center;padding:104px 0 88px}
-    .hero:before{content:"";position:absolute;z-index:-1;left:50%;top:20px;transform:translateX(-50%);width:min(780px,100%);height:450px;background:radial-gradient(ellipse at center,rgba(55,115,255,.19),rgba(73,64,180,.07) 40%,transparent 72%);pointer-events:none}
-    .eyebrow{display:inline-flex;align-items:center;gap:9px;border:1px solid #252b36;background:rgba(7,9,13,.75);padding:6px 11px;color:#bdc7d7;font-size:12px;letter-spacing:.02em}
-    .status-dot{width:6px;height:6px;background:#69a5ff;box-shadow:0 0 10px #3b82f6}
-    h1{max-width:850px;margin:25px auto 18px;font-size:clamp(42px,7.2vw,78px);line-height:1.02;letter-spacing:-.065em;font-weight:720}
-    .gradient{background:linear-gradient(105deg,#fff 10%,#bcd7ff 56%,#8b83ff 100%);background-clip:text;-webkit-background-clip:text;color:transparent}
-    .lead{max-width:650px;margin:0 auto;color:#a1a8b5;font-size:clamp(15px,2vw,18px);line-height:1.8}
-    .actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:30px}
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;padding:0 17px;border:1px solid #343a46;font-size:13px;font-weight:650;transition:transform .18s,border-color .18s,background .18s}
-    .btn:hover{transform:translateY(-1px);border-color:#66738a}
-    .btn-primary{background:#f5f7fa;color:#08090b;border-color:#f5f7fa}
-    .btn-primary:hover{background:#dce7ff;border-color:#dce7ff}
-    .terminal{max-width:540px;margin:47px auto 0;text-align:left;border:1px solid #252a34;background:rgba(5,6,9,.88);box-shadow:0 22px 90px rgba(0,0,0,.35)}
-    .term-top{height:39px;display:flex;align-items:center;gap:7px;padding:0 13px;border-bottom:1px solid #20242c;color:#707987;font-size:11px}
-    .term-dot{width:7px;height:7px;border-radius:50%;background:#343a45}
-    .term-title{margin-left:5px}
-    .term-body{padding:18px 20px;font:13px/1.9 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#c8d0dc;overflow-wrap:anywhere}
-    .prompt{color:#72a8ff;margin-right:10px}.comment{color:#727b89}
-    section{padding:76px 0;border-top:1px solid rgba(255,255,255,.075)}
-    .section-head{max-width:640px;margin-bottom:30px}
-    .kicker{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.16em;text-transform:uppercase;color:#77aaff}
-    h2{font-size:clamp(27px,4vw,40px);line-height:1.14;letter-spacing:-.045em;margin:12px 0}
-    .section-desc{margin:0;color:var(--muted);font-size:15px}
-    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-    .card{min-height:158px;padding:21px;border:1px solid var(--line);background:linear-gradient(145deg,rgba(14,16,22,.96),rgba(4,5,8,.98));transition:border-color .2s}
-    .card:hover{border-color:rgba(91,157,255,.62)}
-    .card-icon{display:grid;place-items:center;width:32px;height:32px;border:1px solid #293348;background:#0c1423;color:#8db9ff;font:13px ui-monospace,monospace}
-    .card h3{font-size:15px;margin:15px 0 5px;letter-spacing:-.02em}
-    .card p{font-size:13px;line-height:1.7;color:var(--muted);margin:0}
-    .split{display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:start}
-    .codebox{border:1px solid #252a34;background:#050609;overflow:hidden}
-    .code-head{padding:11px 15px;border-bottom:1px solid #252a34;color:#929aaa;font-size:12px}
-    pre{margin:0;padding:17px 19px;overflow:auto;color:#d1d8e3;font:12px/1.9 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-    .road{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-    .road-item{padding:17px;border:1px solid var(--line);color:#c5ccd7;font-size:13px;background:rgba(7,9,13,.7)}
-    .road-item strong{display:block;color:#fff;font-size:13px;margin-bottom:5px}
-    .road-item span{color:var(--muted);font-size:12px}
-    .closing{text-align:center;padding:68px 24px;border:1px solid #222a38;background:radial-gradient(ellipse at 50% 0,rgba(52,100,210,.14),transparent 68%),#050609}
-    .closing p{max-width:500px;margin:0 auto;color:var(--muted);font-size:14px}
-    .closing .actions{margin-top:22px}
-    footer{padding:26px 0;border-top:1px solid rgba(255,255,255,.08);color:#818997;font-size:12px}
-    .foot{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
-    .footlinks{display:flex;gap:18px;flex-wrap:wrap}
-    :focus-visible{outline:2px solid #78aaff;outline-offset:4px}
-    ::selection{background:rgba(59,130,246,.35);color:#fff}
-    @media(max-width:760px){.container{width:min(var(--max),calc(100% - 30px))}.nav{height:62px}.navlinks{gap:13px}.navlinks a:not(.nav-cta){display:none}.hero{padding:78px 0 66px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.split{grid-template-columns:1fr;gap:22px}.road{grid-template-columns:1fr}.card{min-height:145px}section{padding:60px 0}}
-    @media(max-width:440px){.grid{grid-template-columns:1fr}.hero{padding-top:64px}.lead{font-size:15px}.nav-cta{padding:7px 10px}.logo{font-size:18px}.terminal{margin-top:34px}.term-body{padding:14px;font-size:12px}}
-    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#000000">
+<meta name="description" content="OCode.js documentation — tài liệu, API và kiến trúc dự án của Velclaw.">
+<title>OCode.js Docs — Small tools. Solid foundations.</title>
+<style>
+:root{color-scheme:dark;--bg:#000;--panel:#080a0e;--panel2:#0c1018;--fg:#f7f8fa;--muted:#969eac;--line:#222832;--blue:#5b9dff;--violet:#8b7bff;--max:1120px}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:88px}body{margin:0;background:radial-gradient(ellipse 68% 430px at 50% -170px,rgba(38,91,200,.22),transparent 76%),linear-gradient(180deg,#000 0%,#030406 58%,#000 100%);color:var(--fg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit}button{cursor:pointer}.container{width:min(var(--max),calc(100% - 44px));margin-inline:auto}
+header{position:sticky;top:0;z-index:20;background:rgba(0,0,0,.82);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.09)}.nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:24px}.logo{display:inline-flex;align-items:center;gap:10px;font-weight:720;font-size:19px;letter-spacing:-.7px;white-space:nowrap}.logo-mark{display:block;width:44px;height:44px;object-fit:contain;flex:0 0 44px;background:transparent;border:0;box-shadow:none;mix-blend-mode:screen}.dot{color:var(--blue)}.navlinks{display:flex;align-items:center;gap:26px;color:#b5bdca;font-size:13px}.navlinks a:hover,.text-link:hover{color:#fff}.nav-cta{border:1px solid #343b48;padding:8px 13px;color:#fff!important}.nav-cta:hover{background:#11151c}
+.hero{position:relative;overflow:hidden;text-align:center;padding:94px 0 82px}.hero:before{content:"";position:absolute;z-index:-1;left:50%;top:20px;transform:translateX(-50%);width:min(780px,100%);height:450px;background:radial-gradient(ellipse at center,rgba(55,115,255,.19),rgba(73,64,180,.07) 40%,transparent 72%);pointer-events:none}.eyebrow{display:inline-flex;align-items:center;gap:9px;border:1px solid #252b36;background:rgba(7,9,13,.75);padding:6px 11px;color:#bdc7d7;font-size:12px}.status-dot{width:6px;height:6px;background:#69a5ff;box-shadow:0 0 10px #3b82f6}h1{max-width:850px;margin:25px auto 18px;font-size:clamp(42px,7.2vw,78px);line-height:1.02;letter-spacing:-.065em;font-weight:720}.gradient{background:linear-gradient(105deg,#fff 10%,#bcd7ff 56%,#8b83ff 100%);background-clip:text;-webkit-background-clip:text;color:transparent}.lead{max-width:690px;margin:0 auto;color:#a1a8b5;font-size:clamp(15px,2vw,18px);line-height:1.8}.actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:30px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;padding:0 17px;border:1px solid #343a46;background:rgba(5,6,9,.7);color:#fff;font-size:13px;font-weight:650;transition:transform .18s,border-color .18s,background .18s}.btn:hover{transform:translateY(-1px);border-color:#66738a}.btn-primary{background:#f5f7fa;color:#08090b;border-color:#f5f7fa}.btn-primary:hover{background:#dce7ff;border-color:#dce7ff}
+.terminal{max-width:570px;margin:43px auto 0;text-align:left;border:1px solid #252a34;background:rgba(5,6,9,.88);box-shadow:0 22px 90px rgba(0,0,0,.35)}.term-top{height:39px;display:flex;align-items:center;gap:7px;padding:0 13px;border-bottom:1px solid #20242c;color:#707987;font-size:11px}.term-dot{width:7px;height:7px;border-radius:50%;background:#343a45}.term-title{margin-left:5px}.term-body{padding:18px 20px;font:12px/1.9 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#c8d0dc;overflow-wrap:anywhere}.prompt{color:#72a8ff;margin-right:10px}.comment{color:#727b89}.copy{margin-left:auto;border:1px solid #343a46;background:#0b0d12;color:#cbd2df;padding:4px 9px;font-size:11px}.copy:hover{border-color:#7b91b6;color:white}
+section{padding:72px 0;border-top:1px solid rgba(255,255,255,.075)}.section-head{max-width:690px;margin-bottom:29px}.kicker{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.16em;text-transform:uppercase;color:#77aaff}h2{font-size:clamp(27px,4vw,40px);line-height:1.14;letter-spacing:-.045em;margin:12px 0}.section-desc{margin:0;color:var(--muted);font-size:15px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.card{min-height:155px;padding:21px;border:1px solid var(--line);background:linear-gradient(145deg,rgba(14,16,22,.96),rgba(4,5,8,.98));transition:border-color .2s}.card:hover{border-color:rgba(91,157,255,.62)}.card-icon{display:grid;place-items:center;width:32px;height:32px;border:1px solid #293348;background:#0c1423;color:#8db9ff;font:13px ui-monospace,monospace}.card h3{font-size:15px;margin:15px 0 5px;letter-spacing:-.02em}.card p{font-size:13px;line-height:1.7;color:var(--muted);margin:0}.pill-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.pill{font-size:10px;color:#b9c8e0;border:1px solid #293449;background:#0b111b;padding:3px 7px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}.codebox{border:1px solid #252a34;background:#050609;overflow:hidden;min-width:0}.code-head{display:flex;align-items:center;gap:8px;padding:11px 15px;border-bottom:1px solid #252a34;color:#929aaa;font-size:12px}.code-head .copy{margin-left:auto}pre{margin:0;padding:17px 19px;overflow:auto;color:#d1d8e3;font:12px/1.9 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.code-blue{color:#8abaff}.code-green{color:#8cddb4}.code-muted{color:#727b89}
+.road{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.road-item{padding:17px;border:1px solid var(--line);color:#c5ccd7;font-size:13px;background:rgba(7,9,13,.7)}.road-item strong{display:block;color:#fff;font-size:13px;margin-bottom:5px}.road-item span{color:var(--muted);font-size:12px}
+.form-demo{border:1px solid #252a34;background:linear-gradient(145deg,#0b0d12,#050609);padding:22px;max-width:700px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:#c6ccd7}.field input,.field select,.field textarea{width:100%;min-height:42px;border:1px solid #303643;background:#050609;color:#f5f7fa;padding:10px 12px;border-radius:0;outline:none}.field textarea{min-height:96px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:#6da5ff;box-shadow:0 0 0 2px #5b9dff20}.field input::placeholder,.field textarea::placeholder{color:#687181}.form-note{color:#798391;font-size:11px;margin:12px 0 0}.table-wrap{overflow:auto;border:1px solid var(--line)}table{width:100%;border-collapse:collapse;min-width:520px;font-size:12px}th,td{text-align:left;padding:12px 14px;border-bottom:1px solid #242832}th{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#8993a3;background:#10131a}td{color:#aeb6c3}tr:last-child td{border-bottom:0}td code{color:#c4d3ff;background:#171c27;padding:2px 5px}
+.closing{text-align:center;padding:65px 24px;border:1px solid #222a38;background:radial-gradient(ellipse at 50% 0,rgba(52,100,210,.14),transparent 68%),#050609}.closing p{max-width:540px;margin:0 auto;color:var(--muted);font-size:14px}.closing .actions{margin-top:22px}footer{padding:26px 0;border-top:1px solid rgba(255,255,255,.08);color:#818997;font-size:12px}.foot{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}.footlinks{display:flex;gap:18px;flex-wrap:wrap}:focus-visible{outline:2px solid #78aaff;outline-offset:4px}::selection{background:rgba(59,130,246,.35);color:#fff}
+@media(max-width:760px){.container{width:min(var(--max),calc(100% - 30px))}.nav{height:62px}.navlinks{gap:12px}.navlinks a:not(.nav-cta){display:none}.hero{padding:72px 0 62px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.split{grid-template-columns:1fr;gap:15px}.road{grid-template-columns:1fr}section{padding:58px 0}.card{min-height:140px}}@media(max-width:440px){.grid{grid-template-columns:1fr}.hero{padding-top:60px}.lead{font-size:15px}.nav-cta{padding:7px 10px}.logo{font-size:18px}.terminal{margin-top:32px}.term-body{padding:14px;font-size:11px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.form-demo{padding:16px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important}}
+
+:root{--sidebar-width:236px}
+.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar-width);z-index:40;display:flex;flex-direction:column;padding:22px 14px;background:rgba(5,6,9,.96);backdrop-filter:blur(18px);border-right:1px solid #222832;transform:translateX(0);transition:transform .22s ease}
+.side-brand{display:flex;align-items:center;gap:10px;padding:4px 9px 24px;margin-bottom:13px;border-bottom:1px solid #222832;font-size:16px;font-weight:720;letter-spacing:-.04em}
+.side-brand-mark{display:block;width:34px;height:34px;flex:0 0 34px;color:#f7f8fa}
+.brand-symbol{display:inline-flex;align-items:center;gap:10px;white-space:nowrap}
+.brand-symbol svg{display:block;width:34px;height:34px;flex:none}
+.brand-word{font-weight:780;letter-spacing:-.045em;color:#f7f8fa}
+.brand-word .brand-js{font-size:.72em;letter-spacing:-.03em;color:#d5d9e1}
+.logo .brand-symbol{gap:9px}
+.logo .brand-symbol svg{width:30px;height:30px}
+.logo .brand-slash{color:#737985;font-weight:300;font-size:1.5em;margin:0 2px}
+.hero-wordmark{margin:0 0 16px;overflow:hidden;font-size:clamp(48px,10vw,112px);font-weight:850;line-height:.9;letter-spacing:-.055em;color:transparent;-webkit-text-stroke:1.4px transparent;background:linear-gradient(115deg,#6eaefb,#8a77d8 68%,#b36be9);background-clip:text;-webkit-background-clip:text;position:relative}
+.hero-wordmark span{display:inline-block;color:transparent;-webkit-text-stroke:1.5px #6489c8;background:none}
+.hero-wordmark small{font-size:.22em;letter-spacing:-.02em;-webkit-text-stroke:0;color:#a8b0bf;vertical-align:baseline;margin-left:5px}
+.hero .eyebrow{letter-spacing:.13em}
+@media(max-width:600px){.hero-wordmark{font-size:clamp(42px,13vw,76px);margin-bottom:20px}}
+.side-caption{padding:12px 10px 8px;color:#697487;font:10px ui-monospace,monospace;letter-spacing:.15em;text-transform:uppercase}
+.side-nav{display:grid;gap:4px}
+.side-nav a{display:flex;align-items:center;gap:11px;padding:10px 11px;border:1px solid transparent;color:#9ca6b7;font-size:12px;transition:background .15s,border-color .15s,color .15s}
+.side-nav a:hover,.side-nav a.active{color:#f5f7fa;background:#10141d;border-color:#252d3b}
+.side-nav .side-icon{width:17px;text-align:center;color:#8abaff;font:13px ui-monospace,monospace}
+.side-bottom{margin-top:auto;padding:16px 10px 0;border-top:1px solid #222832;color:#697487;font-size:10px;line-height:1.7}
+.side-bottom strong{display:block;color:#b8c6dc;font-weight:550}
+.side-toggle{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;margin-right:2px;border:1px solid #343a46;background:#080a0e;color:#e9edf5;font-size:18px;line-height:1}
+header,main,footer{margin-left:var(--sidebar-width)}
+.nav{justify-content:flex-start}
+.navlinks{margin-left:auto}
+.sidebar-overlay{display:none}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-105%);box-shadow:none}
+ body.sidebar-open .sidebar{transform:translateX(0);box-shadow:20px 0 70px #000b}
+ .sidebar-overlay{display:block;position:fixed;inset:0;z-index:35;background:rgba(0,0,0,.65);opacity:0;pointer-events:none;transition:opacity .2s}
+ body.sidebar-open .sidebar-overlay{opacity:1;pointer-events:auto}
+ header,main,footer{margin-left:0}
+ .side-toggle{display:inline-flex}
+}
+@media(min-width:901px){.side-toggle{display:none}}
+@media(prefers-reduced-motion:reduce){.sidebar,.sidebar-overlay{transition:none}}
+
+
+/* OCODE_DOCS_UI_REFRESH_2026 */
+:root{--sidebar-width:248px;--max:1180px;--line:#202633}
+body{background:radial-gradient(ellipse 70% 440px at 55% -170px,rgba(43,95,190,.2),transparent 76%),#000}
+.sidebar{width:var(--sidebar-width);padding:24px 16px;background:rgba(3,4,7,.97);border-right-color:#1b2230}
+.side-brand{padding:4px 10px 22px}
+.side-nav a{min-height:40px;border-radius:3px}
+.side-nav a.active{background:linear-gradient(90deg,rgba(73,126,221,.14),rgba(15,19,28,.7));border-color:#28364d;box-shadow:inset 2px 0 #6da5ff}
+header{background:rgba(0,0,0,.88);border-bottom-color:#1b2230}
+.nav{height:72px}
+.logo-mark{width:40px;height:40px;flex-basis:40px}
+.hero{padding-top:108px;padding-bottom:92px}
+.hero:before{width:min(900px,100%);height:500px;background:radial-gradient(ellipse at center,rgba(57,111,235,.18),rgba(73,64,180,.06) 43%,transparent 72%)}
+.eyebrow{border-color:#293246;border-radius:999px;padding:7px 13px}
+.status-dot{border-radius:50%}
+h1{max-width:900px;font-size:clamp(44px,7vw,82px);letter-spacing:-.072em}
+.lead{max-width:720px;color:#aab2c0}
+.btn,.nav-cta,.copy{border-radius:4px}
+.btn-primary{box-shadow:0 5px 24px rgba(255,255,255,.06)}
+.terminal,.codebox,.form-demo,.closing,.card,.road-item,.table-wrap{border-radius:5px}
+.terminal{border-color:#293142;box-shadow:0 26px 100px rgba(0,0,0,.45)}
+.term-top{height:42px}
+section{padding:82px 0;border-top-color:#171b23}
+.section-head{margin-bottom:32px}
+.kicker{color:#8cb8ff}
+.card{min-height:172px;padding:23px;background:linear-gradient(145deg,rgba(13,16,23,.96),rgba(4,5,8,.98))}
+.card-icon{border-radius:4px}
+.card h3{font-size:16px}
+.card p,.section-desc{line-height:1.8}
+.road-item{padding:20px}
+.codebox pre{tab-size:2}
+.form-demo{max-width:780px}
+.field input,.field select,.field textarea{border-radius:4px}
+.closing{padding:76px 24px}
+footer{border-top-color:#1b2230}
+.side-toggle{border-radius:4px}
+a,button,input,select,textarea{ -webkit-tap-highlight-color:transparent}
+@media(min-width:901px){
+ .sidebar{width:var(--sidebar-width)}
+ header,main,footer{margin-left:var(--sidebar-width)}
+ .container{width:min(var(--max),calc(100% - 56px))}
+ .hero{padding-top:112px}
+}
+@media(max-width:900px){
+ :root{--sidebar-width:50vw}
+ .sidebar{width:50vw;min-width:260px;max-width:360px;padding:20px 14px}
+ body.sidebar-open{overflow:hidden}
+ .nav{height:64px}
+ .hero{padding:72px 0 62px}
+ section{padding:60px 0}
+ .side-toggle{display:inline-flex;flex:0 0 36px;width:36px;height:36px;margin-right:4px;border-radius:4px}
+ .navlinks{gap:8px}
+ .nav-cta{font-size:12px}
+}
+@media(max-width:440px){
+ .container{width:calc(100% - 28px)}
+ .sidebar{width:50vw;min-width:0;max-width:none;padding:18px 10px}
+ .side-brand{gap:7px;padding-inline:5px;font-size:14px}
+ .side-brand-mark{width:30px;height:30px;flex-basis:30px}
+ .side-nav a{padding:10px 7px;gap:8px;font-size:11px}
+ .side-caption{padding-left:7px}
+ .nav{gap:8px}
+ .logo{gap:5px;font-size:16px}
+ .logo-mark{width:30px;height:30px;flex-basis:30px}
+ .nav-cta{padding:7px 8px;font-size:11px}
+ h1{font-size:clamp(39px,12vw,54px)}
+ .hero{padding-top:60px}
+ .terminal{margin-top:28px}
+ .card{padding:18px;min-height:unset}
+ .closing{padding:48px 18px}
+}
+
+
+/* POLISHED_NAV_ICONS_2026 */
+.side-nav .side-icon{width:18px;height:18px;flex:0 0 18px;display:inline-flex;align-items:center;justify-content:center;color:#8abaff;transition:color .18s,transform .18s}
+.side-nav .side-icon svg{display:block;width:18px;height:18px;flex:none}
+.side-nav a:hover .side-icon,.side-nav a.active .side-icon{color:#fff}
+.side-nav a:hover .side-icon{transform:translateY(-1px)}
+/* MENU_MATCH_PAGES_LOGO_2026 */
+:root{--sidebar-width:248px}
+.sidebar{width:var(--sidebar-width);padding:25px 18px;background:rgba(8,8,9,.96);border-right:1px solid #252529;backdrop-filter:blur(18px)}
+.side-brand{gap:12px;padding:2px 8px 28px;margin-bottom:8px;border-bottom:0;font-size:16px;font-weight:750;letter-spacing:-.045em}
+.side-brand-mark{width:42px;height:42px;flex:0 0 42px;object-fit:contain;border:0;border-radius:0;background:transparent;mix-blend-mode:screen}
+.side-caption{padding:14px 10px 9px;color:#77777d;font:10px ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase}
+.side-nav{display:grid;gap:5px}
+.side-nav a{display:flex;align-items:center;gap:12px;min-height:40px;padding:10px 11px;border:1px solid transparent;border-radius:8px;color:#a8a8ae;font-size:12px;transition:background .18s,color .18s,border-color .18s}
+.side-nav a:hover,.side-nav a.active{background:#151517;color:#fff;border-color:#28282c;box-shadow:none}
+.side-nav a.active{box-shadow:inset 2px 0 #8abaff}
+.side-nav .side-icon{width:17px;flex:0 0 17px;text-align:center;color:#8abaff;font:13px ui-monospace,monospace}
+.side-bottom{margin-top:auto;padding:17px 9px 0;border-top:1px solid #252529;color:#77777d;font-size:11px;line-height:1.7}
+.side-bottom strong{display:block;color:#f0f0f2;font-weight:600}
+.side-toggle{width:36px;height:36px;border:1px solid #39393d;border-radius:6px;background:#101012;color:#f5f5f5}
+header{background:rgba(5,5,5,.82);border-bottom-color:#252529}
+.nav-cta{border-radius:6px}
+@media(max-width:800px){
+ .sidebar{width:min(82vw,290px);transform:translateX(-102%);box-shadow:20px 0 60px #0000}
+ body.sidebar-open .sidebar{transform:translateX(0);box-shadow:20px 0 60px #0009}
+ .sidebar-overlay{background:#0009}
+ .container{width:calc(100% - 30px)}
+}
+@media(prefers-reduced-motion:reduce){.sidebar,.sidebar-overlay{transition:none!important}}
+
+</style>
 </head>
 <body>
-<header>
-  <div class="container nav">
-    <a class="logo" href="#top" aria-label="OCode.js home"><span class="logo-mark" aria-hidden="true">{ }</span><span>OCode<span class="dot">.js</span></span></a>
-    <nav class="navlinks" aria-label="Điều hướng chính">
-      <a href="#features">Tính năng</a>
-      <a href="#quickstart">Bắt đầu</a>
-      <a href="docs/API.md">API</a>
-      <a class="nav-cta" href="https://github.com/Velclaw/OCode.js">GitHub ↗</a>
-    </nav>
-  </div>
-</header>
+
+<aside class="sidebar" id="docsSidebar" aria-label="Điều hướng tài liệu">
+ <a class="side-brand" href="#top"><svg class="side-brand-mark" viewBox="0 0 40 40" role="img" aria-label="OCode.js mark"><path d="M20 3 38 36H2Z" fill="currentColor"/></svg><span><span class="brand-word">OCODE<span class="brand-js">.js</span></span><small style="display:block;color:#7c8492;font-size:10px;font-weight:500;letter-spacing:.08em;margin-top:2px">DOCUMENTATION</small></span></a>
+ <div class="side-caption">Workspace</div>
+ <nav class="side-nav" aria-label="Mục tài liệu">
+  <a class="active" href="#top"><span class="side-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg></span>Tổng quan</a>
+  <a href="#guide"><span class="side-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22Z"/><path d="M4 5.5V22M8 7h8M8 11h7"/></svg></span>Hướng dẫn bắt đầu</a>
+  <a href="#architecture"><span class="side-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/></svg></span>Kiến trúc</a>
+  <a href="#api"><span class="side-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4H6a2 2 0 0 0-2 2v3a3 3 0 0 1-2 3 3 3 0 0 1 2 3v3a2 2 0 0 0 2 2h2M16 4h2a2 2 0 0 1 2 2v3a3 3 0 0 0 2 3 3 3 0 0 0-2 3v3a2 2 0 0 1-2 2h-2"/></svg></span>API reference</a>
+  <a href="#forms"><span class="side-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 8h8M8 12h5M8 16h8"/></svg></span>Forms & components</a>
+ </nav>
+ <div class="side-caption">Liên kết</div>
+ <nav class="side-nav" aria-label="Liên kết dự án">
+  <a href="OCodejs-by-Velclaw-Full-Rebrand.pdf" target="_blank" rel="noreferrer"><span class="side-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v6h5M9 13h6M9 17h6"/></svg></span>Brand brief PDF</a>
+  <a href="https://github.com/Velclaw/OCodejs" target="_blank" rel="noreferrer"><span class="side-icon"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.55.1.76-.24.76-.53v-2.08c-3.1.67-3.75-1.32-3.75-1.32-.5-1.28-1.24-1.62-1.24-1.62-1.02-.7.08-.69.08-.69 1.13.08 1.72 1.16 1.72 1.16 1 .1.76 2.08 3.2 1.58.1-.73.39-1.23.7-1.52-2.48-.28-5.08-1.24-5.08-5.5 0-1.22.44-2.21 1.16-2.99-.12-.28-.5-1.42.11-2.96 0 0 .95-.3 3.05 1.14a10.6 10.6 0 0 1 5.55 0c2.1-1.43 3.05-1.14 3.05-1.14.61 1.54.23 2.68.11 2.96.72.78 1.16 1.77 1.16 2.99 0 4.27-2.6 5.22-5.09 5.5.4.35.75 1.02.75 2.06V22c0 .29.2.63.76.53A11.1 11.1 0 0 0 12 .9Z"/></svg></span>GitHub repository</a>
+ </nav>
+ <div class="side-bottom"><strong>OCode.js · Velclaw</strong>Small tools. Solid foundations.</div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+<header><div class="container nav">
+<button class="side-toggle" id="sidebarToggle" aria-label="Mở điều hướng" aria-expanded="false">☰</button>
+<a class="logo" href="#top" aria-label="OCode.js docs"><span class="brand-symbol"><svg viewBox="0 0 40 40" role="img" aria-label="OCode.js mark"><path d="M20 3 38 36H2Z" fill="currentColor"/></svg><span class="brand-slash">/</span><span class="brand-word">OCODE<span class="brand-js">.js</span></span></span><span style="color:#7c8492;font-size:12px;font-weight:500;margin-left:8px">Docs</span></a>
+<nav class="navlinks" aria-label="Điều hướng chính"><a href="#guide">Hướng dẫn</a><a href="#architecture">Kiến trúc</a><a href="#api">API</a><a href="#forms">Forms</a><a class="nav-cta" href="https://github.com/Velclaw/OCodejs" target="_blank" rel="noreferrer">GitHub ↗</a></nav>
+</div></header>
 <main id="top">
-  <div class="container hero">
-    <div class="eyebrow"><span class="status-dot"></span> JavaScript · TypeScript · Zero runtime dependencies</div>
-    <h1>Small tools.<br><span class="gradient">Solid foundations.</span></h1>
-    <p class="lead">Bộ tiện ích JavaScript và TypeScript gọn nhẹ, có thể kết hợp linh hoạt để xây dựng ứng dụng web hiện đại — từ Node.js đến Next.js.</p>
-    <div class="actions">
-      <a class="btn btn-primary" href="#quickstart">Bắt đầu ngay <span aria-hidden="true">↗</span></a>
-      <a class="btn" href="docs/API.md">Đọc tài liệu API <span aria-hidden="true">→</span></a>
-    </div>
-    <div class="terminal" aria-label="Ví dụ cài đặt">
-      <div class="term-top"><span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span><span class="term-title">terminal</span></div>
-      <div class="term-body"><div><span class="prompt">$</span>git clone https://github.com/Velclaw/OCode.js.git</div><div><span class="prompt">$</span>cd OCode.js &amp;&amp; npm install</div><div><span class="prompt">$</span>npm test</div><div class="comment"># Build and test locally</div></div>
-    </div>
-  </div>
-  <section id="features">
-    <div class="container">
-      <div class="section-head"><div class="kicker">01 / Toolkit</div><h2>Những mảnh ghép thiết yếu.<br>Không thêm gánh nặng.</h2><p class="section-desc">API nhỏ, rõ ràng và có kiểu dữ liệu. Chỉ lấy những gì cần dùng, tích hợp vào stack hiện có.</p></div>
-      <div class="grid">
-        <article class="card"><div class="card-icon">Aa</div><h3>String utilities</h3><p>Tạo slug, đổi kiểu chữ, escape HTML và cắt chuỗi an toàn.</p></article>
-        <article class="card"><div class="card-icon">{ }</div><h3>Object helpers</h3><p>Pick, omit, deep merge, đọc đường dẫn lồng nhau và clone JSON.</p></article>
-        <article class="card"><div class="card-icon">↻</div><h3>Async control</h3><p>Retry với exponential backoff, timeout, deduplication và sleep hỗ trợ abort.</p></article>
-        <article class="card"><div class="card-icon">↗</div><h3>URL &amp; HTTP</h3><p>Quản lý query parameters, parse URL và gửi request JSON có kiểu.</p></article>
-        <article class="card"><div class="card-icon">✓</div><h3>Validation</h3><p>Kiểm tra email, URL HTTP(S), record, khoảng số và điều kiện đầu vào.</p></article>
-        <article class="card"><div class="card-icon">⌘</div><h3>Developer ready</h3><p>TypeScript strict, Node test runner, source maps và GitHub Actions CI.</p></article>
-      </div>
-    </div>
-  </section>
-  <section id="quickstart">
-    <div class="container">
-      <div class="section-head"><div class="kicker">02 / Quick start</div><h2>Bắt đầu trong vài lệnh.</h2><p class="section-desc">Clone repository để khám phá mã nguồn, chạy kiểm thử và build cục bộ.</p></div>
-      <div class="split">
-        <div class="codebox"><div class="code-head">Terminal · Node.js 18+</div><pre><code>git clone https://github.com/Velclaw/OCode.js.git
-cd OCode.js
-npm install
-npm test
-npm run build</code></pre></div>
-        <div class="codebox"><div class="code-head">TypeScript · Example</div><pre><code>import { slugify } from "ocode-js/string";
-import { retry } from "ocode-js/async";
-
-const slug = slugify("Build a better web");
-
-const result = await retry(
-  async () => fetch("/api/status"),
-  { attempts: 3, delayMs: 200 }
-);</code></pre></div>
-      </div>
-      <p class="section-desc" style="margin-top:15px;font-size:12px">Lưu ý: package chưa được phát hành lên npm. Các import ở trên yêu cầu build cục bộ hoặc liên kết package vào dự án (link); xem hướng dẫn trong README.</p>
-    </div>
-  </section>
-  <section id="ecosystem">
-    <div class="container">
-      <div class="section-head"><div class="kicker">03 / Works with your stack</div><h2>Framework-agnostic by design.</h2><p class="section-desc">OCode.js bổ sung tiện ích cho dự án của bạn; không thay thế framework, runtime hay nền tảng triển khai.</p></div>
-      <div class="road">
-        <div class="road-item"><strong>JavaScript &amp; TypeScript</strong><span>API nhỏ, kiểu dữ liệu rõ ràng</span></div>
-        <div class="road-item"><strong>Node.js</strong><span>Tiện ích server và kiểm thử tích hợp</span></div>
-        <div class="road-item"><strong>Next.js</strong><span>Dùng được phía server; chỉ các hàm lưu trữ trình duyệt getLocalStorage, readStorage, writeStorage và removeStorage cần chạy trên browser</span></div>
-      </div>
-    </div>
-  </section>
-  <section>
-    <div class="container"><div class="closing"><div class="kicker">Build with OCode.js</div><h2>Gọn ở phần phụ trợ.<br><span class="gradient">Rõ ràng ở phần cốt lõi.</span></h2><p>Khám phá mã nguồn, đọc tài liệu API và đóng góp cải tiến cho bộ tiện ích.</p><div class="actions"><a class="btn btn-primary" href="https://github.com/Velclaw/OCode.js">Mở repository ↗</a><a class="btn" href="README.md">README</a></div></div></div>
-  </section>
+<div class="container hero">
+<div class="eyebrow"><span class="status-dot"></span> OCODE.JS DOCUMENTATION · BY VELCLAW</div>
+<div class="hero-wordmark" aria-label="OCODE.js"><span>OCODE</span><small>.js</small></div>
+<h1>Build with OCode.js.<br><span class="gradient">Keep it precise.</span></h1>
+<p class="lead">Tài liệu OCode.js với cùng ngôn ngữ giao diện của repository chính: nền đen sâu, đường viền mảnh, khung terminal vuông góc, nút rõ ràng và biểu mẫu tối giản.</p>
+<div class="actions"><a class="btn btn-primary" href="#guide">Bắt đầu đọc <span>↗</span></a><a class="btn" href="OCodejs-by-Velclaw-Full-Rebrand.pdf" target="_blank" rel="noreferrer">Xem brand brief PDF</a><a class="btn" href="https://github.com/Velclaw/OCodejs" target="_blank" rel="noreferrer">Mã nguồn ↗</a></div>
+<div class="terminal"><div class="term-top"><span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span><span class="term-title">quick start / terminal</span><button class="copy" data-copy="git clone https://github.com/Velclaw/OCodejs.git&#10;cd OCodejs&#10;npm install">Sao chép</button></div><div class="term-body"><div><span class="prompt">$</span>git clone https://github.com/Velclaw/OCodejs.git</div><div><span class="prompt">$</span>cd OCodejs</div><div><span class="prompt">$</span>npm install</div><div class="comment"># Kiểm tra scripts và README trước khi chạy test/build</div></div></div>
+</div>
+<section id="guide"><div class="container">
+<div class="section-head"><div class="kicker">01 / Documentation</div><h2>Mọi thứ quan trọng, được tổ chức rõ ràng.</h2><p class="section-desc">Bố cục trang tài liệu theo cùng hệ thống card, khung code và nút hành động như trang OCode.js chính.</p></div>
+<div class="grid">
+<article class="card"><div class="card-icon">⌘</div><h3>Bắt đầu nhanh</h3><p>Clone repository, đọc README và xác nhận các script hiện có trước khi phát triển.</p><div class="pill-row"><span class="pill">Setup</span><span class="pill">Workflow</span></div></article>
+<article class="card"><div class="card-icon">◈</div><h3>Kiến trúc</h3><p>Tài liệu hóa các lớp runtime, module và ranh giới xử lý theo implementation thực tế.</p><div class="pill-row"><span class="pill">Architecture</span></div></article>
+<article class="card"><div class="card-icon">{ }</div><h3>API reference</h3><p>Chữ ký hàm, kiểu dữ liệu, lỗi có thể phát sinh và ví dụ kiểm chứng được.</p><div class="pill-row"><span class="pill">TypeScript</span><span class="pill">API</span></div></article>
+<article class="card"><div class="card-icon">↔</div><h3>Routing & rendering</h3><p>Ghi rõ trạng thái hỗ trợ của routes, layouts, SSR/SSG/CSR khi được triển khai.</p></article>
+<article class="card"><div class="card-icon">✓</div><h3>Testing</h3><p>Test cho lỗi biên, timeout, xử lý bất đồng bộ và tương thích API.</p></article>
+<article class="card"><div class="card-icon">↗</div><h3>Đóng góp</h3><p>Nhánh riêng, thay đổi có phạm vi rõ, CI và pull request để review.</p></article>
+</div></div></section>
+<section id="architecture"><div class="container">
+<div class="section-head"><div class="kicker">02 / Architecture</div><h2>Khung kiến trúc tham chiếu.</h2><p class="section-desc">Sơ đồ này là bản đồ tài liệu, không phải cam kết mọi lớp đã hoàn tất trong phiên bản hiện tại.</p></div>
+<div class="split"><div class="codebox"><div class="code-head">Application layers</div><pre><span class="code-muted"># conceptual architecture</span>
+<span class="code-blue">Application</span>
+  ├─ Routes / Pages
+  ├─ UI / Layouts
+  └─ API Handlers
+       ↓
+<span class="code-green">Runtime</span>
+  ├─ Node.js
+  └─ Supported adapters</pre></div>
+<div class="codebox"><div class="code-head">Documentation contract</div><pre><span class="code-muted"># each feature should document</span>
+- Public API and types
+- Inputs and return values
+- Error and timeout behavior
+- Runtime compatibility
+- Runnable examples
+- Tests and support status</pre></div></div>
+<div class="road" style="margin-top:12px"><div class="road-item"><strong>Routing</strong><span>URL matching, route parameters, 404 behavior</span></div><div class="road-item"><strong>Rendering</strong><span>Rendering mode, cache and hydration behavior</span></div><div class="road-item"><strong>HTTP / Async</strong><span>Request lifecycle, cancellation and timeout</span></div></div>
+</div></section>
+<section id="api"><div class="container">
+<div class="section-head"><div class="kicker">03 / API reference</div><h2>API cần kiểm chứng được.</h2><p class="section-desc">Mỗi module nên đi kèm chữ ký, ví dụ chạy được và kiểm thử. Trạng thái bên dưới là checklist tài liệu, không khẳng định tính năng đã phát hành.</p></div>
+<div class="table-wrap"><table><thead><tr><th>Module</th><th>Tài liệu cần có</th><th>Kiểm thử</th></tr></thead><tbody><tr><td><code>string</code></td><td>Input/output, Unicode, escaping</td><td>Edge cases</td></tr><tr><td><code>object</code></td><td>Deep paths, merge semantics</td><td>Nested values</td></tr><tr><td><code>async</code></td><td>Retry, timeout, cancellation</td><td>Resolve/reject/race</td></tr><tr><td><code>url / http</code></td><td>Parsing, status, request errors</td><td>Malformed URL / timeout</td></tr><tr><td><code>validation</code></td><td>Constraints and error format</td><td>Boundary values</td></tr></tbody></table></div>
+</div></section>
+<section id="forms"><div class="container">
+<div class="section-head"><div class="kicker">04 / Form components</div><h2>Biểu mẫu cùng hệ thống giao diện.</h2><p class="section-desc">Mẫu form tham chiếu để thống nhất cách trình bày input, select, textarea và nút hành động với thiết kế OCode.js. Đây là demo giao diện, không gửi dữ liệu đi đâu.</p></div>
+<form class="form-demo" id="feedbackForm">
+<div class="form-grid">
+<div class="field"><label for="name">Tên / tổ chức</label><input id="name" name="name" placeholder="Ví dụ: Velclaw" autocomplete="organization"></div>
+<div class="field"><label for="topic">Chủ đề</label><select id="topic" name="topic"><option value="docs">Tài liệu</option><option value="api">API / module</option><option value="design">Giao diện</option><option value="bug">Báo lỗi</option></select></div>
+<div class="field full"><label for="email">Email (tùy chọn)</label><input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email"></div>
+<div class="field full"><label for="message">Nội dung góp ý</label><textarea id="message" name="message" placeholder="Mô tả đề xuất hoặc vấn đề cần làm rõ..."></textarea></div>
+</div>
+<div class="actions" style="justify-content:flex-start;margin-top:18px"><button class="btn btn-primary" type="submit">Xem bản xem trước <span>→</span></button><button class="btn" type="reset">Xóa nội dung</button></div>
+<p class="form-note" id="formNote" aria-live="polite">Demo chỉ hiển thị bản xem trước trong trình duyệt; không gửi hoặc lưu thông tin.</p>
+</form>
+</div></section>
+<section><div class="container"><div class="closing"><div class="kicker">OCode.js · Velclaw</div><h2>Tối giản ở giao diện.<br><span class="gradient">Chính xác trong tài liệu.</span></h2><p>Mở repository để xem implementation mới nhất và đối chiếu mọi ví dụ với mã nguồn thực tế.</p><div class="actions"><a class="btn btn-primary" href="https://github.com/Velclaw/OCodejs" target="_blank" rel="noreferrer">Mở repository ↗</a><a class="btn" href="OCodejs-by-Velclaw-Full-Rebrand.pdf" target="_blank" rel="noreferrer">Full Rebrand PDF</a></div></div></div></section>
 </main>
-<footer>
-  <div class="container foot">
-    <a class="logo" href="#top"><span class="logo-mark" aria-hidden="true">{ }</span><span>OCode<span class="dot">.js</span></span></a>
-    <div>MIT License · Early development</div>
-    <nav class="footlinks" aria-label="Liên kết cuối trang"><a href="README.md">README</a><a href="docs/API.md">API</a><a href="https://github.com/Velclaw/OCode.js">GitHub ↗</a></nav>
-  </div>
-</footer>
+<footer><div class="container foot"><a class="logo" href="#top"><img class="logo-mark" src="https://raw.githubusercontent.com/zskbot/pages_logo/main/OCode.js/ocode-logo.gif" alt="OCode.js logo"><span>OCode<span class="dot">.js</span></span></a><div>Documentation · Velclaw</div><nav class="footlinks"><a href="https://github.com/Velclaw/OCodejs" target="_blank" rel="noreferrer">GitHub ↗</a><a href="OCodejs-by-Velclaw-Full-Rebrand.pdf" target="_blank" rel="noreferrer">Brand PDF</a></nav></div></footer>
+<script>
+(() => {
+
+const sidebarToggle = document.getElementById('sidebarToggle');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+const closeSidebar = () => { document.body.classList.remove('sidebar-open'); sidebarToggle?.setAttribute('aria-expanded','false'); };
+sidebarToggle?.addEventListener('click', () => {
+ const open = document.body.classList.toggle('sidebar-open');
+ sidebarToggle.setAttribute('aria-expanded', String(open));
+});
+sidebarOverlay?.addEventListener('click', closeSidebar);
+document.addEventListener('keydown', event => { if (event.key === 'Escape') closeSidebar(); });
+document.querySelectorAll('.side-nav a[href^="#"]').forEach(link => link.addEventListener('click', () => {
+ document.querySelectorAll('.side-nav a[href^="#"]').forEach(item => item.classList.toggle('active', item === link));
+ closeSidebar();
+}));
+if ('IntersectionObserver' in window) {
+ const targets = [...document.querySelectorAll('main[id], main section[id]')];
+ const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+  if (entry.isIntersecting) {
+   document.querySelectorAll('.side-nav a[href^="#"]').forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id));
+  }
+ }), {rootMargin:'-18% 0px -68% 0px'});
+ targets.forEach(target => observer.observe(target));
+}
+
+document.querySelectorAll('[data-copy]').forEach(button => button.addEventListener('click', async () => {
+  const original = button.textContent;
+  try { await navigator.clipboard.writeText(button.dataset.copy); button.textContent = 'Đã sao chép'; }
+  catch { button.textContent = 'Không thể sao chép'; }
+  window.setTimeout(() => { button.textContent = original; }, 1600);
+}));
+const form = document.getElementById('feedbackForm');
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  const data = new FormData(form);
+  const name = String(data.get('name') || '').trim();
+  const topic = String(data.get('topic') || 'docs');
+  const message = String(data.get('message') || '').trim();
+  const note = document.getElementById('formNote');
+  note.textContent = message ? 'Bản xem trước — ' + (name || 'Người dùng') + ' · ' + topic + ': ' + message : 'Hãy nhập nội dung góp ý trước khi xem bản xem trước.';
+});
+})();
+</script>
 </body>
 </html>
