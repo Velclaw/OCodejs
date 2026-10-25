@@ -1,0 +1,43 @@
+{
+  "lockfileVersion": 2,
+  "configVersion": 0,
+  "workspaces": {
+    "": {
+      "name": "ocodejs-framework",
+      "dependencies": {
+        "@ocodejs/router": "*",
+      },
+    },
+    "packages/cli": {
+      "name": "@ocodejs/cli",
+      "version": "0.1.0",
+      "bin": {
+        "ocode": "./src/index.js",
+      },
+      "dependencies": {
+        "@ocodejs/core": "*",
+      },
+    },
+    "packages/core": {
+      "name": "@ocodejs/core",
+      "version": "0.1.0",
+      "dependencies": {
+        "@ocodejs/router": "*",
+        "@vercel/analytics": "^2.0.1",
+      },
+    },
+    "packages/router": {
+      "name": "@ocodejs/router",
+      "version": "0.1.0",
+    },
+  },
+  "packages": {
+    "@ocodejs/cli": ["@ocodejs/cli@workspace:packages/cli"],
+
+    "@ocodejs/core": ["@ocodejs/core@workspace:packages/core"],
+
+    "@ocodejs/router": ["@ocodejs/router@workspace:packages/router"],
+
+    "@vercel/analytics": ["@vercel/analytics@2.0.1", "", { "peerDependencies": { "@remix-run/react": "^2", "@sveltejs/kit": "^1 || ^2", "next": ">= 13", "nuxt": ">= 3", "react": "^18 || ^19 || ^19.0.0-rc", "svelte": ">= 4", "vue": "^3", "vue-router": "^4" }, "optionalPeers": ["@remix-run/react", "@sveltejs/kit", "next", "nuxt", "react", "svelte", "vue", "vue-router"] }, "sha512-MTQG6V9qQrt1tsDeF+2Uoo5aPjqbVPys1xvnIftXSJYG2SrwXRHnqEvVoYID7BTruDz4lCd2Z7rM1BdkUehk2g=="],
+  }
+}
