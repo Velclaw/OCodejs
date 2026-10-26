@@ -42,3 +42,10 @@ test("GitHub allowlist is explicit and case-insensitive",()=>{
   process.env.GITHUB_ALLOWED_USERS="";
   assert.equal(allowedGitHubLogin("zskbot"),false);
 });
+
+test("wildcard explicitly allows any GitHub username",()=>{
+  process.env.GITHUB_ALLOWED_USERS="*";
+  assert.equal(allowedGitHubLogin("zskbot"),true);
+  assert.equal(allowedGitHubLogin("random-user"),true);
+  assert.equal(allowedGitHubLogin("ANY-github-user"),true);
+});
