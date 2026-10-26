@@ -203,6 +203,20 @@ header{background:rgba(5,5,5,.82);border-bottom-color:#252529}
 
 /* OCODE_SQUARE_CONTROLS: sharp-corner UI requested for mobile */
 .btn,.copy,.terminal,.nav-cta,.side-toggle,.hero .btn-primary,.hero .btn:not(.btn-primary){border-radius:0!important}
+
+/* Agent Skills Directory */
+.skills-command{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap;margin:0 0 22px;padding:16px 18px;border:1px solid #293449;background:linear-gradient(110deg,rgba(12,18,29,.96),rgba(5,6,9,.98))}
+.skills-command code{font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#dbe6ff;overflow-wrap:anywhere}
+.skills-platforms{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 28px}
+.skills-platforms .pill{font-size:11px;padding:5px 9px}
+.skills-card{min-height:190px}
+.skills-card h3{margin-top:13px}
+.skills-card .skill-list{margin:9px 0 0;padding-left:17px;color:#aab3c2;font-size:12px;line-height:1.9;overflow-wrap:anywhere}
+.skills-card .skill-list code{color:#c6d6ff;font-size:11px}
+.skills-notice{margin-top:18px;padding:14px 16px;border-left:2px solid #6ea5ff;background:#0a0d13;color:#9ca7b8;font-size:12px;line-height:1.8}
+.skills-notice strong{color:#e7edf7}
+@media(max-width:760px){.skills-command{align-items:flex-start}.skills-command code{font-size:12px}.skills-card{min-height:0}}
+
 </style>
 <style id="ocode-square-ui-final">
 /* Final square-corner override: load after every existing stylesheet */
@@ -476,6 +490,9 @@ html body .term-top { border-bottom-color: rgba(255,255,255,.22) !important; }
   <a href="#guide"><span class="side-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22Z"/><path d="M4 5.5V22M8 7h8M8 11h7"/></svg></span>Hướng dẫn bắt đầu</a>
   <a href="#architecture"><span class="side-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/></svg></span>Kiến trúc</a>
   <a href="#api"><span class="side-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4H6a2 2 0 0 0-2 2v3a3 3 0 0 1-2 3 3 3 0 0 1 2 3v3a2 2 0 0 0 2 2h2M16 4h2a2 2 0 0 1 2 2v3a3 3 0 0 0 2 3 3 3 0 0 0-2 3v3a2 2 0 0 1-2 2h-2"/></svg></span>API reference</a>
+  <a href="#agent-skills"><span class="side-icon" aria-hidden="true">✳</span>Agent Skills Directory</a>
+  <a href="#openai-plugins"><span class="side-icon" aria-hidden="true">⌘</span>ChatGPT &amp; Codex Plugins</a>
+  <a href="#x-bo"><span class="side-icon" aria-hidden="true">XB</span>x-bo by OCODE.js</a>
   <a href="#forms"><span class="side-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 8h8M8 12h5M8 16h8"/></svg></span>Forms & components</a>
  </nav>
  <div class="side-caption">Liên kết</div>
@@ -489,7 +506,7 @@ html body .term-top { border-bottom-color: rgba(255,255,255,.22) !important; }
 <header><div class="container nav">
 <button class="side-toggle" id="sidebarToggle" aria-label="Mở điều hướng" aria-expanded="false">☰</button>
 <a class="logo" href="#top" aria-label="OCode.js docs"><span class="brand-symbol"><img src="https://raw.githubusercontent.com/zskbot/pages_logo/main/OCode.js/ocode-js-logo-animated.gif?v=3" alt="OCode.js animated logo" width="35" height="35"><span class="brand-slash">/</span><span class="brand-word">OCODE<span class="brand-js">.js</span></span></span><span style="color:#7c8492;font-size:12px;font-weight:500;margin-left:8px">Docs</span></a>
-<nav class="navlinks" aria-label="Điều hướng chính"><a href="#guide">Hướng dẫn</a><a href="#architecture">Kiến trúc</a><a href="#api">API</a><a href="#forms">Forms</a><a class="nav-cta" href="https://github.com/Velclaw/OCodejs" target="_blank" rel="noreferrer">GitHub ↗</a></nav>
+<nav class="navlinks" aria-label="Điều hướng chính"><a href="#guide">Hướng dẫn</a><a href="#architecture">Kiến trúc</a><a href="#api">API</a><a href="#agent-skills">Skills</a><a href="#x-bo">x-bo</a><a href="#forms">Forms</a><a class="nav-cta" href="https://github.com/Velclaw/OCodejs" target="_blank" rel="noreferrer">GitHub ↗</a></nav>
 </div></header>
 <main id="top">
 <div class="container hero">
@@ -530,6 +547,151 @@ html body .term-top { border-bottom-color: rgba(255,255,255,.22) !important; }
 - Tests and support status</pre></div></div>
 <div class="road" style="margin-top:12px"><div class="road-item"><strong>Routing</strong><span>URL matching, route parameters, 404 behavior</span></div><div class="road-item"><strong>Rendering</strong><span>Rendering mode, cache and hydration behavior</span></div><div class="road-item"><strong>HTTP / Async</strong><span>Request lifecycle, cancellation and timeout</span></div></div>
 </div></section>
+
+<section id="agent-skills">
+ <div class="container">
+  <div class="section-head">
+   <div class="kicker">04 / Open-source agent skills</div>
+   <h2>The Agent Skills Directory</h2>
+   <p class="section-desc">Khám phá các kỹ năng có thể tái sử dụng để mở rộng quy trình làm việc của AI agent — từ phân tích codebase và thiết kế UI đến kiểm thử, tự động hóa trình duyệt và sáng tạo đa phương tiện.</p>
+  </div>
+  <div class="skills-command">
+   <div><div class="kicker" style="margin-bottom:5px">Quick install</div><code>npx skills add &lt;owner/repo&gt;</code></div>
+   <button class="copy" type="button" data-copy="npx skills add &lt;owner/repo&gt;" aria-label="Sao chép lệnh cài đặt skills">Sao chép lệnh</button>
+  </div>
+  <p class="section-desc">Skills là các gói hướng dẫn và quy trình chuyên biệt mà agent có thể tái sử dụng. Danh mục bên dưới là bộ sưu tập tham khảo; tên skill, nguồn phát hành và mức tương thích cần được xác nhận tại repository gốc.</p>
+  <div class="skills-platforms" aria-label="Các nền tảng agent được mô tả hỗ trợ">
+   <span class="pill">Claude Code</span><span class="pill">Cursor</span><span class="pill">GitHub Copilot</span><span class="pill">Windsurf</span><span class="pill">Gemini</span><span class="pill">VS Code</span><span class="pill">Zed</span>
+  </div>
+  <div class="grid">
+   <article class="card skills-card">
+    <div class="card-icon" aria-hidden="true">01</div><h3>Codebase &amp; kiến trúc</h3>
+    <p>Khám phá cấu trúc dự án, phân tích nguyên nhân lỗi và cải thiện thiết kế hệ thống.</p>
+    <ul class="skill-list"><li><code>find-skills</code></li><li><code>diagnosing-bugs</code></li><li><code>improve-codebase-architecture</code></li><li><code>domain-modeling</code></li><li><code>tdd</code></li></ul>
+   </article>
+   <article class="card skills-card">
+    <div class="card-icon" aria-hidden="true">02</div><h3>Frontend &amp; UI/UX</h3>
+    <p>Thiết kế giao diện web/app và áp dụng các thực hành tốt cho React/Next.js.</p>
+    <ul class="skill-list"><li><code>frontend-design</code></li><li><code>design-mobile-apps</code></li><li><code>vercel-react-best-practices</code></li></ul>
+    <div class="pill-row"><span class="pill">React</span><span class="pill">Next.js</span><span class="pill">Mobile</span></div>
+   </article>
+   <article class="card skills-card">
+    <div class="card-icon" aria-hidden="true">03</div><h3>Sáng tạo &amp; đa phương tiện</h3>
+    <p>Hỗ trợ quy trình tạo video, hoạt ảnh và nội dung chuyển động.</p>
+    <ul class="skill-list"><li><code>ai-video-generation</code></li><li><code>hyperframes</code></li><li><code>hyperframes-animation</code></li><li><code>hyperframes-creative</code></li></ul>
+   </article>
+   <article class="card skills-card">
+    <div class="card-icon" aria-hidden="true">04</div><h3>Tự động hóa agent</h3>
+    <p>Điều khiển trình duyệt và tự động hóa các tác vụ theo quy trình.</p>
+    <ul class="skill-list"><li><code>agent-browser</code></li><li><code>reddit-automation</code></li></ul>
+    <div class="pill-row"><span class="pill">Browser</span><span class="pill">Automation</span></div>
+   </article>
+   <article class="card skills-card">
+    <div class="card-icon" aria-hidden="true">05</div><h3>Tài liệu &amp; điều phối công việc</h3>
+    <p>Hỗ trợ tài liệu làm việc, phân loại yêu cầu và bàn giao tác vụ giữa agent/người dùng.</p>
+    <ul class="skill-list"><li><code>lark-doc</code></li><li><code>triage</code></li><li><code>handoff</code></li></ul>
+   </article>
+   <article class="card skills-card">
+    <div class="card-icon" aria-hidden="true">06</div><h3>Chủ đề &amp; bảng xếp hạng</h3>
+    <p>Tra cứu các skill phổ biến và duyệt theo chủ đề thay vì cài đặt ngẫu nhiên.</p>
+    <div class="pill-row"><span class="pill">AI</span><span class="pill">Testing</span><span class="pill">React</span><span class="pill">Next.js</span><span class="pill">Code quality</span></div>
+    <p style="margin-top:13px"><a class="text-link" href="https://skills.sh/" target="_blank" rel="noopener noreferrer">Mở Skills.sh Directory ↗</a></p>
+   </article>
+  </div>
+  <div class="skills-notice"><strong>Lưu ý an toàn:</strong> Skills có thể chứa chỉ dẫn và script từ bên thứ ba. Trước khi cài, hãy xem repository nguồn, đọc tệp <code>SKILL.md</code>, kiểm tra quyền truy cập và các lệnh được thực thi. Chỉ cài từ nguồn bạn tin cậy. Danh sách nền tảng/skill ở đây là danh mục tham khảo, không phải xác nhận kiểm thử tương thích của dự án OCode.js.</div>
+ </div>
+</section>
+
+<section id="openai-plugins">
+ <div class="container">
+  <div class="section-head">
+   <div class="kicker">05 / Plugin development</div>
+   <h2>Plugin Development for ChatGPT &amp; Codex</h2>
+   <p class="section-desc">Hướng dẫn kiến trúc và quy trình xây dựng plugin kết hợp Skills, MCP server và giao diện tùy chọn để kết nối ChatGPT/Codex với công cụ, dữ liệu và dịch vụ bên ngoài.</p>
+  </div>
+  <div class="grid">
+   <article class="card">
+    <div class="card-icon" aria-hidden="true">01</div>
+    <h3>Plan — Thiết kế use case</h3>
+    <p>Xác định workflow, ví dụ prompts, tool cần có, quyền truy cập và tiêu chí thành công trước khi viết mã.</p>
+    <div class="pill-row"><span class="pill">Use cases</span><span class="pill">Tool schemas</span></div>
+   </article>
+   <article class="card">
+    <div class="card-icon" aria-hidden="true">02</div>
+    <h3>Build — Skills + MCP</h3>
+    <p>Skills hướng dẫn quy trình; MCP server cung cấp tools và kết nối dịch vụ. UI chỉ thêm khi thực sự hữu ích.</p>
+    <div class="pill-row"><span class="pill">Skills</span><span class="pill">MCP</span><span class="pill">Optional UI</span></div>
+   </article>
+   <article class="card">
+    <div class="card-icon" aria-hidden="true">03</div>
+    <h3>Secure — Auth &amp; privacy</h3>
+    <p>Áp dụng xác thực/phân quyền theo nhu cầu, xác minh token phía server, giới hạn dữ liệu và bảo vệ secrets.</p>
+    <div class="pill-row"><span class="pill">OAuth 2.1</span><span class="pill">Least privilege</span></div>
+   </article>
+   <article class="card">
+    <div class="card-icon" aria-hidden="true">04</div>
+    <h3>Test &amp; publish</h3>
+    <p>Kiểm thử tool, lỗi, quyền và UI trên các bề mặt hỗ trợ; rà soát metadata, gửi duyệt và theo dõi sau phát hành.</p>
+    <div class="pill-row"><span class="pill">Validation</span><span class="pill">Review</span><span class="pill">Maintenance</span></div>
+   </article>
+  </div>
+  <div class="road" style="margin-top:12px">
+   <div class="road-item"><strong>Plugin examples</strong><span>Computer Use · Chrome Control · Spreadsheets · Presentations · Data Analytics · GitHub triage</span></div>
+   <div class="road-item"><strong>Developer standards</strong><span>Plugin guidelines · UI guidelines · Metadata · Security &amp; privacy · Authentication</span></div>
+  </div>
+  <div class="skills-notice"><strong>Quan trọng:</strong> UI là tùy chọn; không phải plugin nào cũng cần MCP server. Chỉ yêu cầu quyền tối thiểu, xác minh quyền ở phía server và rà soát kỹ mã/script bên thứ ba trước khi chạy.</div>
+  <p class="section-desc" style="margin-top:16px"><a class="text-link" href="docs/OPENAI-PLUGIN-DEVELOPMENT.md">Đọc hướng dẫn phát triển Plugin đầy đủ ↗</a> · <a class="text-link" href="https://developers.openai.com/plugins" target="_blank" rel="noopener noreferrer">OpenAI Developers ↗</a></p>
+ </div>
+</section>
+
+
+<section id="x-bo">
+ <div class="container">
+  <div class="section-head">
+   <div class="kicker">06 / AI product workspace</div>
+   <h2>x-bo by OCODE.js</h2>
+   <p class="section-desc">Bản thiết kế sản phẩm cho AI web builder: chuyển prompt hoặc hình tham khảo thành mã nguồn có thể xem xét, preview, kiểm thử và đồng bộ qua GitHub — theo quy trình có kiểm soát.</p>
+  </div>
+  <div class="skills-command">
+   <div><div class="kicker">PRODUCT BLUEPRINT</div><code>Prompt → Plan → Generate → Preview → Test → Pull Request</code></div>
+   <a class="btn btn-primary" href="docs/X-BO-BY-OCODEJS-BLUEPRINT.md">Mở thiết kế chi tiết ↗</a>
+  </div>
+  <div class="grid">
+   <article class="card">
+    <div class="card-icon" aria-hidden="true">01</div>
+    <h3>Prompt &amp; Assets</h3>
+    <p>Nhập mô tả, thêm hình tham khảo và chọn template. Mỗi yêu cầu được chuyển thành mục tiêu và tiêu chí nghiệm thu.</p>
+    <div class="pill-row"><span class="pill">Chat</span><span class="pill">Images</span><span class="pill">Templates</span></div>
+   </article>
+   <article class="card">
+    <div class="card-icon" aria-hidden="true">02</div>
+    <h3>AI Planner &amp; Codegen</h3>
+    <p>Chia việc thành task, sinh component/file theo diff, tạo test và báo rõ phần nào đã chạy hoặc còn chờ.</p>
+    <div class="pill-row"><span class="pill">Tasks</span><span class="pill">Code</span><span class="pill">Tests</span></div>
+   </article>
+   <article class="card">
+    <div class="card-icon" aria-hidden="true">03</div>
+    <h3>Preview &amp; Design Mode</h3>
+    <p>Xem bố cục responsive, tinh chỉnh design tokens và kiểm tra mã trong workspace cô lập trước khi đồng bộ.</p>
+    <div class="pill-row"><span class="pill">Responsive</span><span class="pill">Inspector</span><span class="pill">Diff</span></div>
+   </article>
+   <article class="card">
+    <div class="card-icon" aria-hidden="true">04</div>
+    <h3>GitHub &amp; Release Gates</h3>
+    <p>Mặc định tạo branch/PR, chạy checks và xác minh staging. Production chỉ sau khi được phê duyệt rõ ràng.</p>
+    <div class="pill-row"><span class="pill">Branch / PR</span><span class="pill">CI</span><span class="pill">Approval</span></div>
+   </article>
+  </div>
+  <div class="road" style="margin-top:12px">
+   <div class="road-item"><strong>1 · Input</strong><span>Prompt, hình tham khảo, template và design tokens</span></div>
+   <div class="road-item"><strong>2 · Workspace</strong><span>Tasks, preview, Design Mode, Code Mode và test results</span></div>
+   <div class="road-item"><strong>3 · Delivery</strong><span>Diff có thể review, GitHub PR, staging và release gates</span></div>
+  </div>
+  <div class="skills-notice"><strong>Trạng thái trung thực:</strong> đây là blueprint/lộ trình thiết kế, không phải tuyên bố rằng tất cả tính năng đã có trong X-BO. Figma import, iOS app, one-click deploy và các tích hợp bên ngoài cần được xây dựng, kiểm thử và xác minh riêng.</div>
+  <p class="section-desc" style="margin-top:16px"><a class="text-link" href="https://github.com/zskbot/X-BO" target="_blank" rel="noopener noreferrer">Xem repository X-BO ↗</a> · <a class="text-link" href="https://github.com/Velclaw/OCodejs" target="_blank" rel="noopener noreferrer">OCode.js ↗</a></p>
+ </div>
+</section>
+
 <section id="api"><div class="container">
 <div class="section-head"><div class="kicker">03 / API reference</div><h2>API cần kiểm chứng được.</h2><p class="section-desc">Mỗi module nên đi kèm chữ ký, ví dụ chạy được và kiểm thử. Trạng thái bên dưới là checklist tài liệu, không khẳng định tính năng đã phát hành.</p></div>
 <div class="table-wrap"><table><thead><tr><th>Module</th><th>Tài liệu cần có</th><th>Kiểm thử</th></tr></thead><tbody><tr><td><code>string</code></td><td>Input/output, Unicode, escaping</td><td>Edge cases</td></tr><tr><td><code>object</code></td><td>Deep paths, merge semantics</td><td>Nested values</td></tr><tr><td><code>async</code></td><td>Retry, timeout, cancellation</td><td>Resolve/reject/race</td></tr><tr><td><code>url / http</code></td><td>Parsing, status, request errors</td><td>Malformed URL / timeout</td></tr><tr><td><code>validation</code></td><td>Constraints and error format</td><td>Boundary values</td></tr></tbody></table></div>
@@ -594,5 +756,42 @@ form.addEventListener('submit', event => {
 });
 })();
 </script>
+
+<style id="ocodejs-chatbot-integration">
+#ocode-chat-launcher{position:fixed;right:22px;bottom:22px;z-index:1000;width:58px;height:58px;border:1px solid #91baff;background:#f4f7ff;color:#07090d;display:grid;place-items:center;box-shadow:0 12px 36px #0009;cursor:pointer;border-radius:0;font:700 22px/1 ui-sans-serif,system-ui}
+#ocode-chat-launcher:hover{background:#dce8ff;transform:translateY(-2px)}
+#ocode-chat-panel{position:fixed;right:22px;bottom:92px;z-index:1000;width:min(360px,calc(100vw - 28px));padding:20px;border:1px solid #303b50;background:#080b12;color:#f7f8fa;box-shadow:0 24px 80px #000b;display:none}
+#ocode-chat-panel[aria-hidden="false"]{display:block}
+#ocode-chat-panel h2{font-size:18px;margin:0 0 8px;letter-spacing:-.03em}
+#ocode-chat-panel p{font-size:13px;line-height:1.7;color:#aab4c5;margin:0 0 16px}
+#ocode-chat-panel .ocode-chat-actions{display:flex;gap:8px;flex-wrap:wrap}
+#ocode-chat-panel a,#ocode-chat-panel button{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 12px;border:1px solid #343e51;background:#0c111b;color:#fff;font-size:12px;font-weight:650;border-radius:0;cursor:pointer}
+#ocode-chat-panel a.primary{background:#e9f0ff;color:#080b12;border-color:#e9f0ff}
+#ocode-chat-panel .ocode-chat-status{font-size:11px;color:#7e8ba0;margin-top:12px}
+@media(max-width:600px){#ocode-chat-launcher{right:14px;bottom:14px;width:54px;height:54px}#ocode-chat-panel{right:14px;bottom:78px}}
+</style>
+<button id="ocode-chat-launcher" type="button" aria-label="Mở trợ lý OCode.js" aria-expanded="false" aria-controls="ocode-chat-panel"><svg aria-hidden="true" width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l-1-4.5A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8 10h8M8 14h5"/></svg></button>
+<section id="ocode-chat-panel" aria-label="Trợ lý OCode.js" aria-hidden="true">
+  <h2>Trợ lý OCode.js</h2>
+  <p>Hỏi đáp về tài liệu, API và cách sử dụng OCode.js. Mở giao diện chatbot riêng để bắt đầu cuộc trò chuyện.</p>
+  <div class="ocode-chat-actions"><a class="primary" href="./chatbot.html">Mở chatbot <span aria-hidden="true"> ↗</span></a><button id="ocode-chat-close" type="button">Đóng</button></div>
+  <div class="ocode-chat-status" id="ocode-chat-status">Đang kiểm tra cấu hình chatbot…</div>
+</section>
+<script src="./chatbot-config.js"></script>
+<script>
+(() => {
+ const launcher=document.getElementById('ocode-chat-launcher');
+ const panel=document.getElementById('ocode-chat-panel');
+ const close=document.getElementById('ocode-chat-close');
+ const status=document.getElementById('ocode-chat-status');
+ const url=String(window.OCODEJS_CHATBOT_URL||'').trim();
+ const setOpen=open=>{panel.setAttribute('aria-hidden',String(!open));launcher.setAttribute('aria-expanded',String(open));};
+ launcher.addEventListener('click',()=>setOpen(panel.getAttribute('aria-hidden')!=='false'));
+ close.addEventListener('click',()=>setOpen(false));
+ document.addEventListener('keydown',event=>{if(event.key==='Escape')setOpen(false)});
+ status.textContent=url?'Chatbot đã có địa chỉ cấu hình.':'Chatbot đang chờ URL triển khai Vercel; giao diện tài liệu vẫn hoạt động bình thường.';
+})();
+</script>
+
 </body>
 </html>
