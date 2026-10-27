@@ -2,18 +2,15 @@
 name: MobSF
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   schedule:
     - cron: '16 22 * * 4'
 permissions:
   contents: read
 jobs:
   mobile-security:
-    # This repository is a JS/TS utility library, not a mobile application.
-    # Run MobSF only when mobile package artifacts or manifests are present.
-    if: ${{ hashFiles('**/*.apk', '**/*.aab', '**/AndroidManifest.xml', '**/*.ipa') != '' }}
     permissions:
       contents: read
       security-events: write
@@ -26,6 +23,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Run mobsfscan
+        if: ${{ hashFiles('**/*.apk', '**/*.aab', '**/AndroidManifest.xml', '**/*.ipa') != '' }}
         uses: MobSF/mobsfscan@a60d10a83af68e23e0b30611c6515da604f06f65
         with:
           args: . --sarif --output results.sarif
