@@ -11,6 +11,9 @@ permissions:
   contents: read
 jobs:
   mobile-security:
+    # This repository is a JS/TS utility library, not a mobile application.
+    # Run MobSF only when mobile package artifacts or manifests are present.
+    if: ${{ hashFiles('**/*.apk', '**/*.aab', '**/AndroidManifest.xml', '**/*.ipa') != '' }}
     permissions:
       contents: read
       security-events: write
