@@ -14,13 +14,13 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Start your API
         if: ${{ hashFiles('run_your_api.sh') != '' }}
         run: ./run_your_api.sh &
       - name: Mayhem for API
         if: ${{ secrets.MAYHEM_TOKEN != '' && hashFiles('run_your_api.sh') != '' }}
-        uses: ForAllSecure/mapi-action@c31b1886401e3db6ec5c7d7d0ffa4dd6716628cf # v1
+        uses: ForAllSecure/mapi-action@3af82733c74bd6d030bb264abe1face314e645a3 # v2.0.0
         continue-on-error: true
         with:
           mayhem-token: ${{ secrets.MAYHEM_TOKEN }}
@@ -30,6 +30,6 @@ jobs:
           sarif-report: mapi.sarif
       - name: Upload SARIF file
         if: ${{ hashFiles('mapi.sarif') != '' }}
-        uses: github/codeql-action/upload-sarif@9f759ee644a3e7c15c1390abf49868036c00067b # v3
+        uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v3
         with:
           sarif_file: mapi.sarif
