@@ -23,13 +23,13 @@ jobs:
         shell: bash
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Setup Git User
         run: |
           git config --global user.email "npm-cli+bot@github.com"
           git config --global user.name "npm CLI robot"
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         id: node
         with:
           node-version: 22.x
@@ -41,11 +41,11 @@ jobs:
         run: npm rebuild
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v6
 
       - name: Restore cache
         id: cache-gatsby
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           key: ${{ runner.os }}-gatsby-${{ github.ref_name }}
           path: |
@@ -57,14 +57,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Save cache
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           key: ${{ steps.cache-gatsby.outputs.cache-primary-key }}
           path: |
             public
             .cache
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: './public'
 
@@ -81,6 +81,6 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
         with:
           preview: ${{ github.event_name == 'pull_request' }}

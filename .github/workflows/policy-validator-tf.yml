@@ -24,7 +24,7 @@ jobs:
     name: Validate AWS IAM policies
     steps:
       - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Validate required AWS configuration
         env:
           AWS_ROLE: ${{ secrets.AWS_ROLE }}
@@ -36,12 +36,12 @@ jobs:
           test -n "$TEMPLATE_PATH" || { echo "::error::Set TEMPLATE_PATH as a repository variable."; exit 1; }
           test -f "$TEMPLATE_PATH" || { echo "::error::TEMPLATE_PATH does not exist in this checkout."; exit 1; }
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           aws-region: ${{ vars.AWS_REGION }}
       - name: Run AWS AccessAnalyzer ValidatePolicy check
-        uses: aws-actions/terraform-aws-iam-policy-validator@26797c40250bf1ee50af8996a2475b9b5a8b8927 # v1.0.2
+        uses: aws-actions/terraform-aws-iam-policy-validator@1cd3c484b95b6c3d9e42ca1797d89ae74eb29ede # v1.0.3
         with:
           policy-check-type: VALIDATE_POLICY
           template-path: ${{ vars.TEMPLATE_PATH }}
