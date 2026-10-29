@@ -1,58 +1,92 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: Cloudrail
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
+    paths:
+      - "**/*.tf"
+      - "**/*.tfvars"
+      - ".github/workflows/cloudrail.yml"
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
+    paths:
+      - "**/*.tf"
+      - "**/*.tfvars"
+      - ".github/workflows/cloudrail.yml"
+  workflow_dispatch:
   schedule:
-    - cron: '15 22 * * 5'
+    - cron: "15 22 * * 5"
+
+permissions:
+  contents: read
 
 jobs:
   cloudrail:
     name: Run Indeni Cloudrail on Terraform code with SARIF output
     runs-on: ubuntu-latest
     permissions:
-      actions: read
       contents: read
       security-events: write
-
     steps:
-      - name: Clone repo
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v7
 
-      # For Terraform, Cloudrail requires the plan as input. So we generate it using
-      # the Terraform core binary.
-      - uses: hashicorp/setup-terraform@v1
+      - name: Check for Terraform configuration
+        id: terraform
+        shell: bash
+        run: |
+          if find . -type f \( -name '*.tf' -o -name '*.tfvars' \) -not -path './.git/*' -print -quit | grep -q .; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "No Terraform files found; Cloudrail scan is not applicable."
+          fi
+
+      - name: Validate required credentials
+        if: steps.terraform.outputs.found == 'true'
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          CLOUDRAIL_API_KEY: ${{ secrets.CLOUDRAIL_API_KEY }}
+        run: |
+          set -euo pipefail
+          missing=()
+          [[ -n "$AWS_ACCESS_KEY_ID" ]] || missing+=("AWS_ACCESS_KEY_ID")
+          [[ -n "$AWS_SECRET_ACCESS_KEY" ]] || missing+=("AWS_SECRET_ACCESS_KEY")
+          [[ -n "$CLOUDRAIL_API_KEY" ]] || missing+=("CLOUDRAIL_API_KEY")
+          if (( ${#missing[@]} )); then
+            printf 'Missing required repository secrets: %s\n' "${missing[*]}" >&2
+            exit 1
+          fi
+
+      - name: Set up Terraform
+        if: steps.terraform.outputs.found == 'true'
+        uses: hashicorp/setup-terraform@v4
         with:
-          terraform_version: v0.13.2
+          terraform_version: "1.9.8"
 
-      - run: terraform init
+      - name: Initialize Terraform
+        if: steps.terraform.outputs.found == 'true'
+        run: terraform init -input=false
 
-      - run: terraform plan -out=plan.out
+      - name: Create Terraform plan
+        if: steps.terraform.outputs.found == 'true'
+        run: terraform plan -input=false -no-color -out=plan.out
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      # Confirm we have the plan file
-      - run: stat plan.out
-
       - name: Run Cloudrail
+        if: steps.terraform.outputs.found == 'true'
         uses: indeni/cloudrail-run-ga@b56ed2d30913c975b36df231adc2eabf05523622
         with:
-          tf-plan-file: plan.out # This was created in a "terraform plan" step
-          cloudrail-api-key: ${{ secrets.CLOUDRAIL_API_KEY }} # This requires registration to Indeni Cloudrail's SaaS at https://web.cloudrail.app
-          cloud-account-id: # Leave this empty for Static Analaysis, or provide an account ID for Dynamic Analysis, see instructions in Cloudrail SaaS
+          tf-plan-file: plan.out
+          cloudrail-api-key: ${{ secrets.CLOUDRAIL_API_KEY }}
+          cloud-account-id: ""
 
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
-        # Remember that if issues are found, Cloudrail return non-zero exit code, so the if: always()
-        # is needed to ensure the SARIF file is uploaded
-        if: always()
+      - name: Upload Cloudrail SARIF
+        if: always() && steps.terraform.outputs.found == 'true' && hashFiles('cloudrail_results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370
         with:
           sarif_file: cloudrail_results.sarif
