@@ -19,14 +19,14 @@ jobs:
     name: njsscan code scanning
     steps:
       - name: Checkout the code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: nodejsscan scan
         id: njsscan
-        uses: ajinabraham/njsscan-action@7237412fdd36af517e2745077cedbf9d6900d711
+        uses: ajinabraham/njsscan-action@231750a435d85095d33be7d192d52ec650625146
         with:
           args: '. --sarif --output results.sarif'
       - name: Upload njsscan report
         if: ${{ hashFiles('results.sarif') != '' }}
-        uses: github/codeql-action/upload-sarif@9f759ee644a3e7c15c1390abf49868036c00067b # v3
+        uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v3
         with:
           sarif_file: results.sarif
