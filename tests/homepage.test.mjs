@@ -475,3 +475,173 @@ test("reduced motion overrides smooth scrolling and transitions for elements and
     assert.equal(rule(selector, reduced).transition, "none!important");
   }
 });
+
+// Check the source helpers with small fixtures so regressions in the assertions
+// themselves cannot silently weaken the homepage checks above.
+test("attribute reader handles both quote styles, empty values and attribute name casing", () => {
+  assert.deepEqual(attributes(`HREF = "docs/API.md" aria-label='Read "API"' DATA-ID="" xml:lang='vi'`), {
+    href: "docs/API.md", "aria-label": 'Read "API"', "data-id": "", "xml:lang": "vi"
+  });
+  assert.deepEqual(attributes(`title="it's ready = yes"`), { title: "it's ready = yes" });
+  assert.deepEqual(attributes(""), {});
+});
+
+test("element reader handles mixed case, multiline content and empty siblings without matching tag prefixes", () => {
+  const source = `<abbr>Not a link</abbr><A HREF='first'>Line one\n<em>Line two</em></A >
+    <a href="second"></a>`;
+  assert.deepEqual(elements("a", source), [
+    { attrs: { href: "first" }, content: "Line one\n<em>Line two</em>" },
+    { attrs: { href: "second" }, content: "" }
+  ]);
+  assert.deepEqual(elements("a", "<abbr>Not a link</abbr>"), []);
+  assert.deepEqual(elements("a", ""), []);
+});
+
+test("single element assertions reject missing and duplicate landmarks", () => {
+  assert.deepEqual(only("main", '<main id="top">Content</main>'), {
+    attrs: { id: "top" }, content: "Content"
+  });
+  for (const source of ["", "<main>First</main><main>Second</main>"]) {
+    assert.throws(() => only("main", source), {
+      code: "ERR_ASSERTION", message: /^Expected one <main>/
+    });
+  }
+});
+
+test("entity decoding preserves literal ampersands and decodes escaped entities only once", () => {
+  assert.equal(decode("&amp;&lt;&gt;&quot;&apos;&#39;"), `&<>"''`);
+  assert.equal(decode("&amp;lt;script&amp;gt;"), "&lt;script&gt;");
+  assert.equal(decode("A & B &unknown; &amp"), "A & B &unknown; &amp");
+  assert.equal(decode(""), "");
+});
+
+test("text extraction preserves escaped code and separates line breaks while collapsing whitespace", () => {
+  assert.equal(text(` <p> A &amp; <strong>B</strong><BR> &lt;script&gt; </p>
+    <br/> next<br />line\t `), "A & B <script> next line");
+  assert.equal(text(" \n<span></span>\t"), "");
+});
+
+test("class matching uses complete whitespace-separated tokens", () => {
+  const element = { attrs: { class: "  btn-primary\tlogo\nnav-cta  " } };
+  for (const name of ["btn-primary", "logo", "nav-cta"]) assert.equal(hasClass(element, name), true);
+  for (const name of ["btn", "log", "cta", "Logo"]) assert.equal(hasClass(element, name), false);
+  assert.equal(hasClass({ attrs: {} }, "logo"), false);
+});
+
+test("section lookup reports a missing exact ID", () => {
+  assert.throws(() => section("quick"), {
+    code: "ERR_ASSERTION", message: /^Expected one section #quick/
+  });
+});
+
+test("required links must be anchor destinations rather than text or partial URLs", () => {
+  const source = `<a href='docs/API.md'>API</a><a href="#quickstart">Start</a>
+    <span>README.md</span><a title="README.md">No destination</a>`;
+  assert.doesNotThrow(() => requireLinks(source, ["docs/API.md", "#quickstart"]));
+  for (const href of ["README.md", "docs/API", "#quick"]) {
+    assert.throws(() => requireLinks(source, [href]), {
+      code: "ERR_ASSERTION", message: `Missing link to ${href}`
+    });
+  }
+});
+
+test("CSS rule extraction handles grouped selectors, repeated rules and colons in values", () => {
+  const source = `
+    .btn-secondary { color: red; }
+    .btn, .nav-cta { color: #fff; --endpoint: https://example.test/a:b; }
+    .btn:hover { color: blue; }
+    .btn { color: #000; padding: 8px 12px; }
+  `;
+  assert.deepEqual(rule(".btn", source), {
+    color: "#000", "--endpoint": "https://example.test/a:b", padding: "8px12px"
+  });
+  assert.deepEqual(rule(".nav-cta", source), {
+    color: "#fff", "--endpoint": "https://example.test/a:b"
+  });
+  assert.deepEqual(rule(".empty", ".empty { }"), {});
+});
+
+test("CSS lookup rejects missing selectors and media queries instead of using partial matches", () => {
+  assert.throws(() => rule(".btn", ".btn-primary { display: flex; }"), {
+    code: "ERR_ASSERTION", message: "Missing CSS rule for .btn"
+  });
+  assert.throws(() => rule(".btn", ""), {
+    code: "ERR_ASSERTION", message: "Missing CSS rule for .btn"
+  });
+  assert.throws(() => mediaCss("max-width:760"), {
+    code: "ERR_ASSERTION", message: /^Expected media query \(max-width:760\)/
+  });
+});
+
+test("example runner preserves injected helper values and resolved fetch results", async (t) => {
+  for (const [name, slug, response] of [
+    ["null response", "", null],
+    ["undefined response", "custom-slug", undefined],
+    ["HTTP error response", "tùy-chỉnh", { ok: false, status: 503 }]
+  ]) {
+    await t.test(name, async () => {
+      const result = await runExample({
+        slugify: () => slug,
+        retry: (operation) => operation(),
+        fetch: async () => response
+      });
+      assert.equal(result.slug, slug);
+      assert.equal(result.result, response);
+    });
+  }
+});
+
+test("example runner supplies a reusable request callback to the injected retry helper", async () => {
+  const failure = new Error("temporary outage");
+  const response = { ok: true, status: 200 };
+  const requests = [];
+  const result = await runExample({
+    slugify: () => "recovered",
+    async retry(operation) {
+      // Invoke the callback twice without using the real retry implementation or timers.
+      await assert.rejects(operation(), (error) => error === failure);
+      return operation();
+    },
+    async fetch(url) {
+      requests.push(url);
+      if (requests.length === 1) throw failure;
+      return response;
+    }
+  });
+  assert.equal(result.slug, "recovered");
+  assert.equal(result.result, response);
+  assert.deepEqual(requests, ["/api/status", "/api/status"]);
+});
+
+test("example runner propagates retry rejection without starting a request", async () => {
+  const failure = new Error("retry declined");
+  const calls = [];
+  await assert.rejects(runExample({
+    slugify() { calls.push("slugify"); return "unused"; },
+    async retry() { calls.push("retry"); throw failure; },
+    async fetch() { calls.push("fetch"); }
+  }), (error) => error === failure);
+  assert.deepEqual(calls, ["slugify", "retry"]);
+});
+
+test("example runner propagates a synchronous request error through its async callback", async () => {
+  const failure = new Error("request setup failed");
+  let requests = 0;
+  await assert.rejects(runExample({
+    slugify: () => "unused",
+    retry: (operation) => operation(),
+    fetch() { requests++; throw failure; }
+  }), (error) => error === failure);
+  assert.equal(requests, 1);
+});
+
+test("example runner stops before retry and fetch when the slug helper throws", async () => {
+  const failure = new Error("slug failed");
+  const calls = [];
+  await assert.rejects(runExample({
+    slugify() { calls.push("slugify"); throw failure; },
+    retry() { calls.push("retry"); },
+    fetch() { calls.push("fetch"); }
+  }), (error) => error === failure);
+  assert.deepEqual(calls, ["slugify"]);
+});
