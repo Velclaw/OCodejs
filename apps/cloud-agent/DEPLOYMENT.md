@@ -6,7 +6,8 @@ This is guidance only. It does not create cloud resources, change application co
 
 Do not expose this MVP as an autonomous production agent yet. It is a restricted runtime.
 
-- GitHub OAuth login is restricted by the explicit GITHUB_ALLOWED_USERS allowlist. No password-based admin login remains.
+- GitHub OAuth login can be restricted to an explicit GITHUB_ALLOWED_USERS allowlist, or made public by setting GITHUB_ALLOWED_USERS=*.
+- Public login means any GitHub account can sign in; it does not make the application suitable for sensitive or autonomous production workloads.
 - Skills are deterministic (/status, /echo, and a draft-plan fallback); no shell, repository-write, deployment or arbitrary command execution.
 - Durable cloud operation requires web and worker processes sharing the same existing PostgreSQL database.
 - Do not point the app at a business database without approval and a verified backup.
@@ -18,7 +19,7 @@ Do not expose this MVP as an autonomous production agent yet. It is a restricted
 Set in the hosting dashboard only; never commit real values:
 - GITHUB_CLIENT_ID: GitHub OAuth App client ID.
 - GITHUB_CLIENT_SECRET: GitHub OAuth App client secret.
-- GITHUB_ALLOWED_USERS: comma-separated GitHub usernames allowed to sign in. Keep the list minimal.
+- GITHUB_ALLOWED_USERS: set to * to allow all GitHub usernames, or comma-separated usernames to restrict sign-in. Public mode is opt-in.
 - SESSION_SECRET: at least 32 random characters; changing it invalidates sessions.
 - DATABASE_URL: existing PostgreSQL connection string shared by web and worker.
 - DATABASE_SSL=true when the database provider requires TLS and presents a certificate trusted by Node.js.
@@ -30,7 +31,7 @@ Set in the hosting dashboard only; never commit real values:
 Create/configure a GitHub OAuth App with:
 - Homepage URL: the exact APP_ORIGIN.
 - Authorization callback URL: https://your-hostname.example/api/auth/callback (must exactly match APP_ORIGIN + /api/auth/callback).
-- Add only approved GitHub usernames to GITHUB_ALLOWED_USERS.
+- For public sign-in, set GITHUB_ALLOWED_USERS=* in the hosting dashboard. Otherwise, list only approved GitHub usernames.
 Never expose GITHUB_CLIENT_SECRET or SESSION_SECRET in NEXT_PUBLIC variables, client code, commits, or chat messages.
 
 ## Hosting layout
@@ -49,7 +50,7 @@ Health returns HTTP 503 in memory/demo mode. A successful health response confir
 - [ ] Set OAuth and session secrets in the host dashboard; do not paste secrets into chat or commit them.
 - [ ] Deploy web and worker from the same reviewed commit.
 - [ ] Confirm GET /api/health returns HTTP 200 with database: postgres.
-- [ ] Sign in with an allowlisted GitHub account, submit /status, and confirm the task reaches completed.
+- [ ] Sign in with a GitHub account permitted by GITHUB_ALLOWED_USERS; test public mode only if GITHUB_ALLOWED_USERS=*.
 - [ ] Check TLS, access logs, error handling, distributed rate limiting, backups, and restore procedure.
 - [ ] Obtain explicit production approval before production deployment or any paid resource creation.
 

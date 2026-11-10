@@ -46,5 +46,6 @@ export function cookieOptions(){return {httpOnly:true,secure:process.env.NODE_EN
 export function oauthStateCookieOptions(){return {httpOnly:true,secure:process.env.NODE_ENV==="production",sameSite:"lax" as const,path:"/api/auth/callback",maxAge:OAUTH_STATE_TTL};}
 export function allowedGitHubLogin(login:string){
   const allowed=(process.env.GITHUB_ALLOWED_USERS||"").split(",").map(v=>v.trim().toLowerCase()).filter(Boolean);
-  return allowed.length>0&&allowed.includes(login.toLowerCase());
+  // Explicit opt-in: "*" allows any GitHub account to sign in.
+  return allowed.includes("*")||allowed.includes(login.toLowerCase());
 }

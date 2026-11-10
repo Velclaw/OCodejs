@@ -1,0 +1,10 @@
+# Get started
+
+Get started with agentgateway. Select the backend that you want to use agentgateway to route traffic to.
+
+> [!IMPORTANT]
+> Want to use agentgateway in a Kubernetes environment with the Gateway API? Check out the [agentgateway on Kubernetes docs](https://agentgateway.dev/docs/kubernetes/).
+
+- [LLM](https://agentgateway.dev/docs/standalone/latest/documentation/quickstart/llm/): Route requests to supported LLM providers with the agentgateway binary.
+- [MCP servers](https://agentgateway.dev/docs/standalone/latest/documentation/quickstart/mcp/): Connect to an MCP server and try tools in the agentgateway playground.
+- [Non-agentic HTTP traffic](https://agentgateway.dev/docs/standalone/latest/documentation/quickstart/non-agentic-http/): Route HTTP traffic to a non-agentic backend such as httpbin with the agentgateway binary.

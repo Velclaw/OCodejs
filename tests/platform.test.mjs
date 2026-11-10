@@ -50,6 +50,73 @@ test("HTTP helpers build JSON requests and report failures", async () => {
   }
 });
 
+test("fetchJson validates timeoutMs before making a request", async () => {
+  for (const timeoutMs of [0, -1, Infinity, -Infinity, NaN]) {
+    await assert.rejects(fetchJson("https://example.test", { timeoutMs }), RangeError);
+  }
+});
+
+test("fetchJson aborts a pending request and reports the configured timeout", async () => {
+  const originalFetch = globalThis.fetch;
+  let observedSignal;
+  globalThis.fetch = async (_input, init = {}) => {
+    observedSignal = init.signal;
+    return await new Promise((_resolve, reject) => {
+      if (init.signal?.aborted) {
+        reject(init.signal.reason);
+        return;
+      }
+      init.signal?.addEventListener("abort", () => reject(init.signal.reason), { once: true });
+    });
+  };
+  try {
+    await assert.rejects(
+      fetchJson("https://example.test", { timeoutMs: 10 }),
+      /Request timed out after 10ms/
+    );
+    assert.equal(observedSignal?.aborted, true);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("fetchJson forwards caller cancellation when a timeout is configured", async () => {
+  const originalFetch = globalThis.fetch;
+  const caller = new AbortController();
+  let observedSignal;
+  globalThis.fetch = async (_input, init = {}) => {
+    observedSignal = init.signal;
+    return await new Promise((_resolve, reject) => {
+      init.signal?.addEventListener("abort", () => reject(init.signal.reason), { once: true });
+    });
+  };
+  try {
+    const pending = fetchJson("https://example.test", { timeoutMs: 1000, signal: caller.signal });
+    caller.abort(new Error("caller cancelled"));
+    await assert.rejects(pending, /caller cancelled/);
+    assert.equal(observedSignal?.aborted, true);
+    assert.notEqual(observedSignal, caller.signal);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("fetchJson preserves caller signal when timeout is not configured", async () => {
+  const originalFetch = globalThis.fetch;
+  const caller = new AbortController();
+  let observedSignal;
+  globalThis.fetch = async (_input, init = {}) => {
+    observedSignal = init.signal;
+    return new Response(JSON.stringify({ ok: true }), { status: 200 });
+  };
+  try {
+    assert.deepEqual(await fetchJson("https://example.test", { signal: caller.signal }), { ok: true });
+    assert.equal(observedSignal, caller.signal);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test("storage helpers handle malformed values and storage exceptions", () => {
   const data = new Map();
   const storage = {

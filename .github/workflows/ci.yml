@@ -19,8 +19,19 @@ jobs:
           node-version: 20
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Check documentation links
+        run: npm run docs:check
       - name: Build and run tests
         run: npm test
+      - name: Generate API coverage report
+        run: npm run test:coverage
+      - name: Upload coverage report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ocode-js-coverage
+          path: coverage/
+          if-no-files-found: error
+          retention-days: 14
       - name: Validate npm package contents
         run: npm pack --dry-run
       - name: Smoke-test built entry point
