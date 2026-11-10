@@ -2,9 +2,9 @@
 name: MobSF
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   schedule:
     - cron: '16 22 * * 4'
 permissions:
@@ -23,6 +23,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Run mobsfscan
+        if: ${{ hashFiles('**/*.apk', '**/*.aab', '**/AndroidManifest.xml', '**/*.ipa') != '' }}
         uses: MobSF/mobsfscan@a60d10a83af68e23e0b30611c6515da604f06f65
         with:
           args: . --sarif --output results.sarif
